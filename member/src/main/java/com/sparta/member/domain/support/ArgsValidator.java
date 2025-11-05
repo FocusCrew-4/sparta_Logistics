@@ -7,7 +7,7 @@ public final class ArgsValidator {
     public static void requireAllNonNull(Object... objects) {
         for (Object o : objects) {
             if (o == null) {
-                throw new IllegalArgumentException("affiliation must not be null");
+                throw new IllegalArgumentException("argument must not be null");
             }
         }
     }
