@@ -39,7 +39,13 @@ public class Member {
         Affiliation affiliation,
         Role role
     ) {
-        requireAllNonNull(name, password, email, slackId, affiliation, role);
+        requireAllNonNull(
+            "name", name,
+            "password", password,
+            "email", email,
+            "slackId", slackId,
+            "affiliation", affiliation,
+            "role", role);
         return new Member(name, password, email, slackId, affiliation, role);
     }
 

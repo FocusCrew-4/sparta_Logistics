@@ -1,5 +1,7 @@
 package com.sparta.member.domain.vo;
 
+import static com.sparta.member.domain.support.ArgsValidator.requireAllNonNull;
+
 import com.sparta.member.domain.support.ArgsValidator;
 import java.util.UUID;
 
@@ -13,7 +15,10 @@ public record Affiliation(
         UUID id,
         String name
     ) {
-        ArgsValidator.requireAllNonNull(type, id, name);
+        requireAllNonNull(
+            "type", type,
+            "id", id,
+            "name", name);
         return new Affiliation(type, id, name);
     }
 
