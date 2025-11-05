@@ -14,7 +14,7 @@ public class Member {
     private Status status;
     private Role role;
 
-    public Member(
+    private Member(
         String name,
         String password,
         String email,
@@ -29,6 +29,19 @@ public class Member {
         this.affiliation = affiliation;
         this.role = role;
         this.status = Status.PENDING;
+    }
+
+    public static Member requestSignUp(
+        String name,
+        String password,
+        String email,
+        String slackId,
+        Affiliation affiliation,
+        Role role
+    ) {
+
+
+        return new  Member(name, password, email, slackId, affiliation, role);
     }
 
 }
