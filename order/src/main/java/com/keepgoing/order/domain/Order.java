@@ -76,7 +76,7 @@ public class Order {
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedBy;
+    private LocalDateTime updatedAt;
 
     @Column(name = "deleted_by")
     private UUID deletedBy;
