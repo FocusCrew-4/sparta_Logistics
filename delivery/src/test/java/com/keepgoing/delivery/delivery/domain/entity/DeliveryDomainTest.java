@@ -1,5 +1,9 @@
 package com.keepgoing.delivery.delivery.domain.entity;
 
+import com.keepgoing.delivery.delivery.domain.vo.Address;
+import com.keepgoing.delivery.delivery.domain.vo.Distance;
+import com.keepgoing.delivery.delivery.domain.vo.Duration;
+import com.keepgoing.delivery.delivery.domain.vo.RouteSeq;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

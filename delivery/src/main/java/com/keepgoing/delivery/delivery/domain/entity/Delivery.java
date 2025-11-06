@@ -1,5 +1,7 @@
 package com.keepgoing.delivery.delivery.domain.entity;
 
+import com.keepgoing.delivery.delivery.domain.vo.Address;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

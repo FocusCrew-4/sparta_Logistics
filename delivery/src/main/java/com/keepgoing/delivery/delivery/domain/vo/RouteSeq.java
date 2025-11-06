@@ -1,6 +1,4 @@
-package com.keepgoing.delivery.delivery.domain.entity;
-
-import com.keepgoing.delivery.deliveryperson.domain.entity.DeliverySeq;
+package com.keepgoing.delivery.delivery.domain.vo;
 
 public record RouteSeq(int value) {
     public RouteSeq {
