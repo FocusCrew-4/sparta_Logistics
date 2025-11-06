@@ -1,3 +1,14 @@
+spring:
+  sql:
+    init:
+      mode: always
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vendor
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+
 eureka:
   instance:
     prefer-ip-address: true

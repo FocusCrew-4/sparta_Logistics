@@ -2,8 +2,24 @@ spring:
   application:
     name: vendor-service
 
+  datasource:
+    url: jdbc:postgresql://postgresql:5432/vendor
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+
   config:
     import: "optional:configserver:"
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+      defer-datasource-initialization: true
 
   cloud:
     config:
