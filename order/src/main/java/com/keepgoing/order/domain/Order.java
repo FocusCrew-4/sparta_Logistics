@@ -1,21 +1,19 @@
 package com.keepgoing.order.domain;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,46 +22,53 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "p_order")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order {
+public class Order{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "id", column = @Column(name = "supplier_id")),
-        @AttributeOverride(name = "name", column = @Column(name = "supplier_name"))
-    })
-    private Store supplier;
+    // supplier
+    @Column(name = "supplier_id", nullable = false)
+    private UUID supplierId;
 
-    @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "id", column = @Column(name = "receiver_id")),
-        @AttributeOverride(name = "name", column = @Column(name = "receiver_name"))
-    })
-    private Store receiver;
+    @Column(name = "supplier_name", nullable = false)
+    private String supplierName;
 
-    @Embedded
-    private Product product;
+    // receiver
+    @Column(name = "receiver_id", nullable = false)
+    private UUID receiverId;
+
+    @Column(name = "receiver_name", nullable = false)
+    private String receiverName;
+
+    // product
+    @Column(name = "product_id", nullable = false)
+    private UUID productId;
+
+    @Column(name = "product_name", nullable = false)
+    private String productName;
 
     @Column(name = "delivery_id")
     private UUID deliveryId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "order_state")
+    @Column(name = "order_state", nullable = false)
     private OrderState orderState;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "total_price")
+    @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
 
-    @Embedded
-    private DeliveryRequestNote deliveryRequestNote;
+    @Column(name = "delivery_due_at", nullable = false)
+    private LocalDateTime deliveryDueAt;
 
-    @Column(name = "order_at")
+    @Column(name = "delivery_request_note")
+    private String deliveryRequestNote;
+
+    @Column(name = "order_at", nullable = false)
     private LocalDateTime orderedAt;
 
     @Column(name = "confirmed_at")
@@ -72,10 +77,10 @@ public class Order {
     @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_by")
@@ -89,43 +94,74 @@ public class Order {
     private Long version;
 
     @Builder
-    private Order(Store supplier, Store receiver, Product product, UUID deliveryId, OrderState orderState,
-        Integer quantity, Integer totalPrice, DeliveryRequestNote deliveryRequestNote,
-        LocalDateTime orderedAt, LocalDateTime createdAt) {
-        this.supplier = supplier;
-        this.receiver = receiver;
-        this.product = product;
+    private Order(
+        UUID supplierId, String supplierName,
+        UUID receiverId, String receiverName,
+        UUID productId, String productName,
+        UUID deliveryId, OrderState orderState,
+        Integer quantity, Integer totalPrice,
+        LocalDateTime deliveryDueAt, String deliveryRequestNote,
+        LocalDateTime orderedAt
+    ) {
+        if (supplierId == null) throw new IllegalArgumentException("supplierId 필수");
+        if (receiverId == null) throw new IllegalArgumentException("receiverId 필수");
+        if (productId == null) throw new IllegalArgumentException("productId 필수");
+        if (quantity == null || quantity < 1) throw new IllegalArgumentException("quantity >= 1");
+        if (totalPrice == null || totalPrice < 0) throw new IllegalArgumentException("totalPrice >= 0");
+        if (orderedAt == null) throw new IllegalArgumentException("orderedAt 필수");
+        if (deliveryDueAt == null || deliveryDueAt.isBefore(orderedAt))
+            throw new IllegalArgumentException("deliveryDueAt은 orderedAt 이후여야 함");
+
+        this.supplierId = supplierId;
+        this.supplierName = supplierName;
+        this.receiverId = receiverId;
+        this.receiverName = receiverName;
+        this.productId = productId;
+        this.productName = productName;
         this.deliveryId = deliveryId;
-        this.orderState = orderState;
+        this.orderState = (orderState != null) ? orderState : OrderState.PENDING_VALIDATION;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
+        this.deliveryDueAt = deliveryDueAt;
         this.deliveryRequestNote = deliveryRequestNote;
         this.orderedAt = orderedAt;
-        this.createdAt = createdAt;
     }
 
-    public static Order create(Store supplier, Store receiver, Product product,
-        Integer quantity, Integer totalPrice, LocalDateTime now, DeliveryRequestNote deliveryRequestNote ) {
-
-        if (supplier == null) throw new IllegalArgumentException("공급 업체는 필수입니다.");
-        if (receiver == null) throw new IllegalArgumentException("수령 업체는 필수입니다.");
-        if (product == null) throw new IllegalArgumentException("주문 상품은 필수입니다.");
-        if (quantity < 1) throw new IllegalArgumentException("주문 수량은 1개 이상이어야 합니다.");
-        if (totalPrice < 0) throw new IllegalArgumentException("주문 금액은 음수가 될 수 없습니다.");
-        if (deliveryRequestNote.inValidDeliveryDueAt(now))
-            throw new IllegalArgumentException("납품 기간은 필수이며 주문 시간보다 이전일 수 없습니다.");
-
+    public static Order create(
+        UUID supplierId, String supplierName,
+        UUID receiverId, String receiverName,
+        UUID productId, String productName,
+        Integer quantity, Integer totalPrice,
+        LocalDateTime now,
+        LocalDateTime deliveryDueAt, String deliveryRequestNote
+    ) {
         return Order.builder()
-            .supplier(supplier)
-            .receiver(receiver)
-            .product(product)
-            .orderState(OrderState.PENDING_VALIDATION)
+            .supplierId(supplierId)
+            .supplierName(supplierName)
+            .receiverId(receiverId)
+            .receiverName(receiverName)
+            .productId(productId)
+            .productName(productName)
+            .orderState(com.keepgoing.order.domain.OrderState.PENDING_VALIDATION)
             .quantity(quantity)
             .totalPrice(totalPrice)
+            .deliveryDueAt(deliveryDueAt)
             .deliveryRequestNote(deliveryRequestNote)
             .orderedAt(now)
-            .createdAt(now)
             .build();
     }
 
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (this.createdAt == null) this.createdAt = now;
+        if (this.updatedAt == null) this.updatedAt = now;
+        if (this.orderState == null) this.orderState = OrderState.PENDING_VALIDATION;
+
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
