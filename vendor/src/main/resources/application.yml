@@ -26,14 +26,15 @@ spring:
       discovery:
         enabled: true
         service-id: config-server
-      fail-fast: true     # config 서버 접근 실패시 즉시 예외 발생
+      fail-fast: true   # config 서버 접근 실패시 즉시 예외 발생
       retry:
         max-attempts: 6
         initial-interval: 2000
         multiplier: 1.5
+
 eureka:
   client:
-    serviceUrl:
-      defaultZone: http://${EUREKA-HOST}:18080/eureka/  # 로컬 Eureka 주소
+    service-url:
+      defaultZone: http://${EUREKA-HOST}:18080/eureka/
   instance:
     hostname: vendor-service
