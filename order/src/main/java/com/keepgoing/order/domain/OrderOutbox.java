@@ -46,7 +46,7 @@ public class OrderOutbox {
 
     // 어떤 애그리거트에서 발생한 이벤트인지 식별
     @Column(name = "aggregate_type", nullable = false, length = 50)
-    private String aggregateType;
+    private AggregateType aggregateType;
 
     // 해당 이벤트에 속한 도메인 식별자 (주문 ID)
     @Column(name = "aggregate_id", nullable = false, length = 100)
@@ -82,16 +82,22 @@ public class OrderOutbox {
     private Long version;
 
     @Builder
-    private OrderOutbox(UUID eventId, String aggregateType, String aggregateId, String payload, LocalDateTime now) {
+    private OrderOutbox(UUID eventId, AggregateType aggregateType, String aggregateId, EventType eventType, String payload, LocalDateTime now) {
         this.eventId = eventId;
         this.aggregateType = aggregateType;
         this.aggregateId = aggregateId;
-        this.eventType = EventType.ORDER_CREATE;
+        this.eventType = eventType;
         this.payload = payload;
         this.state = OutBoxState.PENDING;
         this.retryCount = 0;
         this.createdAt = now;
         this.updatedAt = now;
         this.version = 0L;
+    }
+
+    public static OrderOutbox create(
+        UUID eventId, AggregateType aggregateType, String aggregateId, EventType eventType, String payload, LocalDateTime now
+    ) {
+        return new OrderOutbox(eventId, aggregateType, aggregateId, eventType, payload, now);
     }
 }

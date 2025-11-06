@@ -1,13 +1,13 @@
 package com.keepgoing.order.domain;
 
-public enum EventType {
+public enum AggregateType {
 
-    COMPLETED("주문 완료")
+    ORDER("주문")
     ;
 
     private String description;
 
-    EventType(String description){
+    AggregateType(String description){
         this.description = description;
     }
 }

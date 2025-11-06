@@ -46,6 +46,9 @@ public class Order{
     @Column(name = "product_id", nullable = false)
     private UUID productId;
 
+    @Column(name = "hub_id")
+    private UUID hubId;
+
     @Column(name = "product_name", nullable = false)
     private String productName;
 
@@ -61,6 +64,9 @@ public class Order{
 
     @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
+
+    @Column(name = "idempotency_key", nullable = false)
+    private UUID idempotencyKey;
 
     @Column(name = "delivery_due_at", nullable = false)
     private LocalDateTime deliveryDueAt;
@@ -99,7 +105,7 @@ public class Order{
         UUID receiverId, String receiverName,
         UUID productId, String productName,
         UUID deliveryId, OrderState orderState,
-        Integer quantity, Integer totalPrice,
+        Integer quantity, Integer totalPrice, UUID idempotencyKey,
         LocalDateTime deliveryDueAt, String deliveryRequestNote,
         LocalDateTime orderedAt
     ) {
@@ -122,6 +128,7 @@ public class Order{
         this.orderState = (orderState != null) ? orderState : OrderState.PENDING_VALIDATION;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
+        this.idempotencyKey = idempotencyKey;
         this.deliveryDueAt = deliveryDueAt;
         this.deliveryRequestNote = deliveryRequestNote;
         this.orderedAt = orderedAt;
@@ -142,9 +149,10 @@ public class Order{
             .receiverName(receiverName)
             .productId(productId)
             .productName(productName)
-            .orderState(com.keepgoing.order.domain.OrderState.PENDING_VALIDATION)
+            .orderState(OrderState.PENDING_VALIDATION)
             .quantity(quantity)
             .totalPrice(totalPrice)
+            .idempotencyKey(UUID.randomUUID())
             .deliveryDueAt(deliveryDueAt)
             .deliveryRequestNote(deliveryRequestNote)
             .orderedAt(now)
@@ -164,4 +172,31 @@ public class Order{
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void changeOrderStateToProductVerified() {
+        orderState = OrderState.PRODUCT_VERIFIED;
+    }
+
+    public void changeOrderStateToFail() {
+        orderState = OrderState.FAILED;
+    }
+
+    public void changeOrderStateToAwaitingPayment() {
+        orderState = OrderState.AWAITING_PAYMENT;
+    }
+
+    public void changeOrderStateToPaid() {
+        orderState = OrderState.PAID;
+    }
+
+    public void changeOrderStateToCompleted() {
+        orderState = OrderState.COMPLETED;
+    }
+
+    public void registerHubId(UUID hubId) {
+        this.hubId = hubId;
+    }
+
+
+
 }
