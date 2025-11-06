@@ -21,7 +21,7 @@ class VendorTest {
         HubId hubId = new HubId(UUID.randomUUID());
 
         //when
-        Vendor vendor = new Vendor(vendorName, vendorType, address, hubId);
+        Vendor vendor = new Vendor(UUID.randomUUID(), vendorName, vendorType, address, hubId);
 
         // then
         assertThat(vendor.getId()).isNotNull(); // UUID 자동 생성 검증
@@ -49,7 +49,7 @@ class VendorTest {
         HubId hubId = new HubId(UUID.randomUUID());
 
         //when
-        Vendor vendor = new Vendor(vendorName, vendorType, address, hubId);
+        Vendor vendor = new Vendor(UUID.randomUUID(), vendorName, vendorType, address, hubId);
 
         // then
         assertThat(vendor.getId()).isNotNull(); // UUID 자동 생성 검증

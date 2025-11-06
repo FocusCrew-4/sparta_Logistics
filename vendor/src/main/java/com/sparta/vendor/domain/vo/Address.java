@@ -1,10 +1,13 @@
 package com.sparta.vendor.domain.vo;
 
 
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@Embeddable
+@NoArgsConstructor
 public class Address {
 
     private String city;
