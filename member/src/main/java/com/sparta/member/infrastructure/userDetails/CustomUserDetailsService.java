@@ -16,7 +16,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        MemberJpa m = memberRepository.findByEmail(email)
+        MemberJpa m = memberRepository.findByEmailUseInfra(email)
             .orElseThrow(() -> new UsernameNotFoundException(email));
         return new CustomUserDetails(m);
     }
