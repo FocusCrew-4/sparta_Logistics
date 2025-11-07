@@ -59,7 +59,7 @@ public class OrderOutbox {
 
     // 카프카에 전달해야 하는 메시지
     @JdbcTypeCode(SqlTypes.JSON) // Hibernate 6 이상
-    @Column(name = "payload", nullable = false, columnDefinition = "jsonb")
+    @Column(name = "payload", nullable = false)
     private String payload;
 
     // Outbox의 생명주기를 정의
@@ -82,13 +82,13 @@ public class OrderOutbox {
     private Long version;
 
     @Builder
-    private OrderOutbox(UUID eventId, AggregateType aggregateType, String aggregateId, EventType eventType, String payload, LocalDateTime now) {
+    private OrderOutbox(UUID eventId, AggregateType aggregateType, String aggregateId, EventType eventType, OutBoxState outBoxState, String payload, LocalDateTime now) {
         this.eventId = eventId;
         this.aggregateType = aggregateType;
         this.aggregateId = aggregateId;
         this.eventType = eventType;
+        this.state = outBoxState;
         this.payload = payload;
-        this.state = OutBoxState.PENDING;
         this.retryCount = 0;
         this.createdAt = now;
         this.updatedAt = now;
@@ -96,8 +96,25 @@ public class OrderOutbox {
     }
 
     public static OrderOutbox create(
-        UUID eventId, AggregateType aggregateType, String aggregateId, EventType eventType, String payload, LocalDateTime now
+        UUID eventId, AggregateType aggregateType, String aggregateId, EventType eventType, OutBoxState outBoxState, String payload, LocalDateTime now
     ) {
-        return new OrderOutbox(eventId, aggregateType, aggregateId, eventType, payload, now);
+        return new OrderOutbox(eventId, aggregateType, aggregateId, eventType, outBoxState, payload, now);
+    }
+
+    public void increaseRetryCount() {
+        retryCount++;
+    }
+
+    public void changeOutboxStateToDeliveryFailed() {
+        state = OutBoxState.DELIVERY_FAILED;
+    }
+
+
+    public void changeOutboxStateToNotificationFailed() {
+        state = OutBoxState.NOTIFICATION_FAILED;
+    }
+
+    public void resetRetryCount() {
+        retryCount = 0;
     }
 }

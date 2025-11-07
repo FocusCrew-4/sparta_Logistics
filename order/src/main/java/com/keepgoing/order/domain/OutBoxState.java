@@ -2,11 +2,13 @@ package com.keepgoing.order.domain;
 
 public enum OutBoxState {
 
-    PENDING("생성됨"),
-    PUBLISHING("처리중"),
-    PUBLISHED("전송 완료"),
-    RETRYING("전송 재시도"),
-    FAILED("실패"),
+    DELIVERY_PENDING("배송 이벤트 발급 대기"),
+    DELIVERY_COMPLETED("배송 이벤트 발급 완료"),
+    DELIVERY_FAILED("배송 이벤트 발급 실패"),
+
+    NOTIFICATION_PENDING("알림 이벤트 발급 대기"),
+    NOTIFICATION_COMPLETED("알림 이벤트 발급 완료"),
+    NOTIFICATION_FAILED("알림 이벤트 발급 실패"),
     ;
 
     private String description;

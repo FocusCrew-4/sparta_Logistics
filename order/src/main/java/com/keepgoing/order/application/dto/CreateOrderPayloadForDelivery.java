@@ -4,7 +4,7 @@ package com.keepgoing.order.application.dto;
 import com.keepgoing.order.domain.OrderState;
 import java.util.UUID;
 
-public record CreateOrderPayload (
+public record CreateOrderPayloadForDelivery(
     UUID orderId,
     UUID receiverId,
     UUID productId,
