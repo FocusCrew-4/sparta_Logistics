@@ -15,4 +15,8 @@ public class HubId {
     public HubId(UUID id) {
         this.id = id;
     }
+
+    public static HubId of(UUID id) {
+        return new HubId(id);
+    }
 }
