@@ -20,4 +20,8 @@ public class Address {
         this.street = street;
         this.zipCode = zipCode;
     }
+
+    public static Address of(String city, String street, String zipCode) {
+        return new Address(city, street, zipCode);
+    }
 }
