@@ -45,6 +45,7 @@ public class OrderOutbox {
     private UUID eventId;
 
     // 어떤 애그리거트에서 발생한 이벤트인지 식별
+    @Enumerated(EnumType.STRING)
     @Column(name = "aggregate_type", nullable = false, length = 50)
     private AggregateType aggregateType;
 
@@ -109,9 +110,12 @@ public class OrderOutbox {
         state = OutBoxState.DELIVERY_FAILED;
     }
 
-
     public void changeOutboxStateToNotificationFailed() {
         state = OutBoxState.NOTIFICATION_FAILED;
+    }
+
+    public void changeOutboxState(OutBoxState outBoxState) {
+        state = outBoxState;
     }
 
     public void resetRetryCount() {
