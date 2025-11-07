@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.sparta.member.domain.enums.Role;
 import com.sparta.member.domain.model.Member;
 import com.sparta.member.domain.vo.Type;
+import com.sparta.member.infrastructure.config.QuerydslConfig;
 import com.sparta.member.infrastructure.persistence.jpa.MemberRepositoryImpl;
 import com.sparta.member.infrastructure.persistence.mapper.MemberJpaMapper;
 import java.util.List;
@@ -25,12 +25,15 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
+@ActiveProfiles("test")
 @Import({
     MemberJpaMapper.class,
-    MemberRepositoryImpl.class
+    MemberRepositoryImpl.class,
+    QuerydslConfig.class
 })
 public class MemberRepositoryImplTest {
 
@@ -53,6 +56,10 @@ public class MemberRepositoryImplTest {
     @AfterEach
     void tearDown() {
 
+    }
+
+    @Test
+    public void test() {
     }
 
 
