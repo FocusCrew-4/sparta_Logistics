@@ -13,11 +13,13 @@ public class CustomUserDetails implements UserDetails {
     private final Long userId;
     private final UserRole role;
     private final UUID affiliationId;
+    private final String token;
 
-    public CustomUserDetails(String userId, String role, String affiliationId) {
+    public CustomUserDetails(String userId, String role, String affiliationId, String token) {
         this.userId = Long.parseLong(userId);
         this.role = UserRole.valueOf(role);
         this.affiliationId = affiliationId == null ? null : UUID.fromString(affiliationId);
+        this.token = token;
     }
 
     public Long getUserId() {
@@ -30,6 +32,10 @@ public class CustomUserDetails implements UserDetails {
 
     public UUID getAffiliationId() {
         return affiliationId;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     @Override
