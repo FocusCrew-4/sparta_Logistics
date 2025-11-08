@@ -6,12 +6,14 @@ import com.sparta.member.application.service.AuthService;
 import com.sparta.member.application.service.MemberService;
 import com.sparta.member.interfaces.dto.SignUpRequestDto;
 import com.sparta.member.interfaces.dto.StatusChangeRequestDto;
+import com.sparta.member.interfaces.dto.StatusUpdateResponseDto;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,7 +58,10 @@ public class MemberController {
         @RequestBody StatusChangeRequestDto requestDto
     ) {
 
-        return null;
+        StatusUpdateResponseDto res = memberService.updateStatus(requestDto);
+
+        return ResponseEntity.noContent()
+            .build();
     }
 
 }
