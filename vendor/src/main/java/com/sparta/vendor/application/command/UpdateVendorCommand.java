@@ -10,6 +10,7 @@ public record UpdateVendorCommand(
     Long userId,
     UUID affiliationId,
     UserRole role,
+    String token,
     UUID vendorId,
     String vendorName,
     VendorType vendorType,
@@ -25,6 +26,7 @@ public record UpdateVendorCommand(
             user.getUserId(),
             user.getAffiliationId(),
             user.getRole(),
+            user.getToken(),
             id,
             request.vendorName(), // null 허용
             request.vendorType() != null ? VendorType.valueOf(request.vendorType().name()) : null,

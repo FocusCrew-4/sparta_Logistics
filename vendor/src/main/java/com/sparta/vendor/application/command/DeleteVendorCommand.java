@@ -9,6 +9,7 @@ public record DeleteVendorCommand(
     Long userId,
     UUID affiliationId,
     UserRole role,
+    String token,
     UUID vendorId
 ) {
 
@@ -17,6 +18,7 @@ public record DeleteVendorCommand(
             user.getUserId(),
             user.getAffiliationId(),
             user.getRole(),
+            user.getToken(),
             id
         );
     }

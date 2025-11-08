@@ -21,20 +21,22 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class VendorController {
+@RequestMapping("/v1/vendors")
+public class ExternalVendorController {
 
     private final VendorService vendorService;
 
-    @GetMapping("/v1/vendors/health-check")
+    @GetMapping("/health-check")
     public String healthCheck() {
         return "OK";
     }
 
-    @PostMapping("/v1/vendors")
+    @PostMapping
     @PreAuthorize("hasAnyRole('MASTER', 'HUB')")
     public ResponseEntity<?> createVendor(@AuthenticationPrincipal CustomUserDetails user,
         @RequestBody CreateVendorRequestDTO request) {
@@ -48,7 +50,7 @@ public class VendorController {
         return ResponseEntity.ok(BaseResponseDTO.success(vendorResponseDTO));
     }
 
-    @GetMapping("/v1/vendors/{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('MASTER', 'HUB', 'DELIVERY', 'COMPANY')")
     public ResponseEntity<?> getVendor(@PathVariable UUID id) {
         VendorResult vendorResult = vendorService.getVendor(id);
@@ -56,7 +58,7 @@ public class VendorController {
         return ResponseEntity.ok(BaseResponseDTO.success(vendorResponseDTO));
     }
 
-    @PatchMapping("/v1/vendors/{id}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('MASTER', 'HUB', 'COMPANY')")
     public ResponseEntity<?> updateVendor(@PathVariable UUID id,
         @AuthenticationPrincipal CustomUserDetails user,
@@ -69,7 +71,7 @@ public class VendorController {
         return ResponseEntity.ok(BaseResponseDTO.success(vendorResponseDTO));
     }
 
-    @DeleteMapping("/v1/vendors/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('MASTER', 'HUB')")
     public ResponseEntity<?> deleteVendor(@PathVariable UUID id,
         @AuthenticationPrincipal CustomUserDetails user
