@@ -13,13 +13,17 @@ import com.keepgoing.order.domain.order.OrderState;
 import com.keepgoing.order.domain.outbox.OutBoxState;
 import com.keepgoing.order.infrastructure.outbox.OrderOutboxRepository;
 import com.keepgoing.order.infrastructure.order.OrderRepository;
+import com.keepgoing.order.presentation.dto.response.BaseResponseDto;
 import com.keepgoing.order.presentation.dto.response.CreateOrderResponse;
+import com.keepgoing.order.presentation.dto.response.OrderInfo;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -152,5 +156,9 @@ public class OrderService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("JSON으로 변환하지 못했습니다.");
         }
+    }
+
+    public Page<OrderInfo> getSearchOrder(Pageable pageable) {
+        return orderRepository.searchOrderPage(pageable).map(OrderInfo::from);
     }
 }
