@@ -1,9 +1,12 @@
 package com.sparta.product.application.service;
 
 import com.sparta.product.application.command.CreateProductCommand;
+import com.sparta.product.application.command.GetProductCommand;
 import com.sparta.product.application.dto.ProductResult;
 import com.sparta.product.application.exception.ErrorCode;
 import com.sparta.product.application.exception.ForbiddenOperationException;
+import com.sparta.product.application.exception.ProductDeletedException;
+import com.sparta.product.application.exception.ProductNotFoundException;
 import com.sparta.product.application.exception.VendorClientException;
 import com.sparta.product.domain.entity.Product;
 import com.sparta.product.domain.repository.ProductRepository;
@@ -14,6 +17,7 @@ import com.sparta.product.infrastructure.external.client.VendorClient;
 import com.sparta.product.infrastructure.external.dto.VendorResponseDTO;
 import com.sparta.product.presentation.dto.BaseResponseDTO;
 import jakarta.transaction.Transactional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +27,33 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final VendorClient vendorClient;
+
+    //---------------------------조회--------------------------------
+    private Product findById(UUID id) {
+        return productRepository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
+    }
+
+    private void checkDeleted(Product product) {
+        if (product.isDeleted()) {
+            throw new ProductDeletedException(ErrorCode.PRODUCT_DELETED);
+        }
+    }
+
+    private void validateHubGetPermission(GetProductCommand command, Product product) {
+        if (command.role() == UserRole.HUB && !command.affiliationId()
+            .equals(product.getHubId().getId())) {
+            throw new ForbiddenOperationException(ErrorCode.FORBIDDEN_HUB_GET_OPERATION);
+        }
+
+    }
+
+    public ProductResult getProduct(GetProductCommand command) {
+        Product product = findById(command.productId());
+        checkDeleted(product);
+        validateHubGetPermission(command, product);
+        return ProductResult.from(product);
+    }
 
     //---------------------------생성--------------------------------
     public ProductResult createProduct(CreateProductCommand command) {
