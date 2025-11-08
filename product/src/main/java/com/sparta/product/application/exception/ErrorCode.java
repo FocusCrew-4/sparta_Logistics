@@ -12,7 +12,10 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "000", "서버 내부 오류입니다."),
     FORBIDDEN_HUB_OPERATION(HttpStatus.FORBIDDEN, "4001", "허브 관리자는 담당 허브에만 상품을 등록할 수 있습니다."),
     FORBIDDEN_COMPANY_OPERATION(HttpStatus.FORBIDDEN, "4002", "업체 담당자는 담당 업체에만 상품을 등록할 수 있습니다."),
-    VENDOR_NOT_FOUND(HttpStatus.NOT_FOUND, "4003", "존재하지 않는 업체 입니다.");
+    VENDOR_NOT_FOUND(HttpStatus.NOT_FOUND, "4003", "존재하지 않는 업체 입니다."),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "4004", "존재하지 않는 상품 입니다."),
+    PRODUCT_DELETED(HttpStatus.GONE, "4005", "삭제된 상품 입니다."),
+    FORBIDDEN_HUB_GET_OPERATION(HttpStatus.FORBIDDEN, "4006", "허브 관리자는 담당 허브의 상품만 조회할 수 있습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

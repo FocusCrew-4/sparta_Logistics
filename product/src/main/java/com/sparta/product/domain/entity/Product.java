@@ -79,4 +79,8 @@ public class Product extends BaseEntity {
         }
         return new Product(productName, productDescription, productPrice, vendorId, hubId);
     }
+
+    public boolean isDeleted() {
+        return getDeletedBy() != null && getDeletedAt() != null;
+    }
 }
