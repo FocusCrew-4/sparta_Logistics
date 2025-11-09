@@ -17,6 +17,9 @@ public class CreateOrderResponse {
     @JsonProperty("order_id")
     private String orderId;
 
+    @JsonProperty("member_id")
+    private Long member_id;
+
     @JsonProperty("order_state")
     private String orderState;
 
@@ -24,17 +27,17 @@ public class CreateOrderResponse {
     private String orderedAt;
 
     @Builder
-    private CreateOrderResponse(String orderState, String orderId, String orderedAt) {
+    private CreateOrderResponse(String orderState, Long member_id, String orderId, String orderedAt) {
         this.orderId = orderId;
+        this.member_id = member_id;
         this.orderState = orderState;
         this.orderedAt = orderedAt;
-
-
     }
 
-    public static CreateOrderResponse create(UUID orderId, OrderState orderState, LocalDateTime orderedAt) {
+    public static CreateOrderResponse create(UUID orderId, Long memberId, OrderState orderState, LocalDateTime orderedAt) {
         return CreateOrderResponse.builder()
             .orderId(String.valueOf(orderId))
+            .member_id(memberId)
             .orderState(String.valueOf(orderState))
             .orderedAt(String.valueOf(orderedAt))
             .build();

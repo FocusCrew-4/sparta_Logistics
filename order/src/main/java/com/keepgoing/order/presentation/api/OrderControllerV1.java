@@ -1,5 +1,6 @@
 package com.keepgoing.order.presentation.api;
 
+import com.keepgoing.order.application.dto.CreateOrderCommand;
 import com.keepgoing.order.application.service.order.OrderService;
 import com.keepgoing.order.domain.order.OrderState;
 import com.keepgoing.order.presentation.dto.request.CreateOrderRequest;
@@ -34,7 +35,12 @@ public class OrderControllerV1 implements OrderController{
     @Override
     @PostMapping("/v1/orders")
     public BaseResponseDto<CreateOrderResponse> create(@Valid @RequestBody CreateOrderRequest request) {
-        CreateOrderResponse response = orderService.create(request.toCommand());
+
+        // 임시 로그인
+        Long memberId = 1L;
+
+        CreateOrderResponse response = orderService.create(request.toCommand(memberId));
+
         return BaseResponseDto.success(response);
     }
 

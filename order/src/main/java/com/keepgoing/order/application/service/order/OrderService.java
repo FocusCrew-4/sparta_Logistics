@@ -52,6 +52,7 @@ public class OrderService {
 
         return CreateOrderResponse.create(
             order.getId(),
+            order.getMemberId(),
             order.getOrderState(),
             order.getOrderedAt()
         );
