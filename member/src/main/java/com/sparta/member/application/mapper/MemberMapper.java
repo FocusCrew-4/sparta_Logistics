@@ -27,7 +27,9 @@ public class MemberMapper implements ApplicationMapper {
             member.affiliation().name(),
             member.affiliation().id(),
             member.role(),
-            member.status()
+            member.status(),
+            member.deletedAt(),
+            member.deleteBy()
         );
     }
 }

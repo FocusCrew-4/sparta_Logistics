@@ -86,4 +86,10 @@ public class MemberService {
 
         return searchedMember.map(mapper::toGetMemberResponseDto);
     }
+
+    public void deleteMember(Long targetId, Long masterId) {
+        Member member = memberRepository.findById(targetId);
+        member.delete(masterId);
+        memberRepository.save(member);
+    }
 }
