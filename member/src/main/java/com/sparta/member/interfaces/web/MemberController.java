@@ -1,14 +1,15 @@
 package com.sparta.member.interfaces.web;
 
-import com.sparta.member.interfaces.dto.BaseResponseDto;
-import com.sparta.member.interfaces.dto.LoginDto;
 import com.sparta.member.application.service.AuthService;
 import com.sparta.member.application.service.MemberService;
+import com.sparta.member.infrastructure.userDetails.CustomUserDetails;
+import com.sparta.member.interfaces.dto.BaseResponseDto;
+import com.sparta.member.interfaces.dto.LoginDto;
+import com.sparta.member.interfaces.dto.MemberInfoResponseDto;
 import com.sparta.member.interfaces.dto.SearchRequestDto;
 import com.sparta.member.interfaces.dto.SignUpRequestDto;
 import com.sparta.member.interfaces.dto.StatusChangeRequestDto;
 import com.sparta.member.interfaces.dto.StatusUpdateResponseDto;
-import com.sparta.member.interfaces.dto.MemberInfoResponseDto;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -98,4 +100,14 @@ public class MemberController {
         return ResponseEntity.ok(BaseResponseDto.success(res));
     }
 
+    @PreAuthorize("hasRole('MASTER')")
+    @PatchMapping("/{id}")
+    public ResponseEntity<BaseResponseDto<?>> deleteMember(
+        @PathVariable Long id,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        memberService.deleteMember(id, userDetails.getUserId());
+        return ResponseEntity.noContent()
+            .build();
+    }
 }
