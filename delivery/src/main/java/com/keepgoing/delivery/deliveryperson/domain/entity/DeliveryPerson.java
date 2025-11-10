@@ -66,7 +66,7 @@ public class DeliveryPerson {
 
     public void updateSlackId(String slackId) {
         if (slackId == null || slackId.isBlank())
-            throw new BusinessException()
+            throw new BusinessException(ErrorCode.DELIVERY_PERSON_REQUIRED_SLACK_ID);
         this.slackId = slackId;
     }
 
