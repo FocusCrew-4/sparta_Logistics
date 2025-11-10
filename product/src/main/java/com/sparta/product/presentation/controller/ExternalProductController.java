@@ -12,6 +12,7 @@ import com.sparta.product.presentation.dto.BaseResponseDTO;
 import com.sparta.product.presentation.dto.reqeust.CreateProductRequestDTO;
 import com.sparta.product.presentation.dto.reqeust.UpdateRequestProductDTO;
 import com.sparta.product.presentation.dto.response.ProductResponseDTO;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class ExternalProductController {
     @PostMapping
     @PreAuthorize("hasAnyRole('MASTER', 'HUB', 'COMPANY')")
     public ResponseEntity<?> createProduct(@AuthenticationPrincipal CustomUserDetails user,
-        @RequestBody CreateProductRequestDTO request) {
+        @Valid @RequestBody CreateProductRequestDTO request) {
 
         CreateProductCommand command = CreateProductCommand.of(user, request);
 
@@ -65,7 +66,7 @@ public class ExternalProductController {
     @PreAuthorize("hasAnyRole('MASTER', 'HUB', 'COMPANY')")
     public ResponseEntity<?> updateProduct(@AuthenticationPrincipal CustomUserDetails user,
         @PathVariable UUID id,
-        @RequestBody UpdateRequestProductDTO request) {
+        @Valid @RequestBody UpdateRequestProductDTO request) {
         UpdateProductCommand command = UpdateProductCommand.of(id, user, request);
         ProductResult result = productService.updateProduct(command);
         return ResponseEntity.ok(BaseResponseDTO.success(result));
