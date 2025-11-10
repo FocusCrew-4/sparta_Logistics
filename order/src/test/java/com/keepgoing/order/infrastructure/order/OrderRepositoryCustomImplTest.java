@@ -53,6 +53,7 @@ class OrderRepositoryCustomImplTest {
         );
 
         Order order1 = Order.builder()
+            .memberId(1L)
             .supplierId(UUID.randomUUID())
             .supplierName("A공급업체")
             .receiverId(UUID.randomUUID())
@@ -72,6 +73,7 @@ class OrderRepositoryCustomImplTest {
         ReflectionTestUtils.setField(order1, "createdAt", LocalDateTime.of(2025, 10, 10, 12, 3, 0));
 
         Order order2 = Order.builder()
+            .memberId(1L)
             .supplierId(UUID.randomUUID())
             .supplierName("B공급업체")
             .receiverId(UUID.randomUUID())
@@ -91,6 +93,7 @@ class OrderRepositoryCustomImplTest {
         ReflectionTestUtils.setField(order2, "createdAt", LocalDateTime.of(2025, 10, 10, 12, 3, 0));
 
         Order order3 = Order.builder()
+            .memberId(1L)
             .supplierId(UUID.randomUUID())
             .supplierName("C공급업체")
             .receiverId(UUID.randomUUID())
@@ -110,6 +113,7 @@ class OrderRepositoryCustomImplTest {
         ReflectionTestUtils.setField(order3, "createdAt", LocalDateTime.of(2025, 9, 10, 12, 3, 0));
 
         Order order4 = Order.builder()
+            .memberId(1L)
             .supplierId(UUID.randomUUID())
             .supplierName("D공급업체")
             .receiverId(UUID.randomUUID())

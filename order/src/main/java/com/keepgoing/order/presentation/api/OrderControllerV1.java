@@ -1,15 +1,18 @@
 package com.keepgoing.order.presentation.api;
 
+import com.keepgoing.order.application.dto.CreateOrderCommand;
 import com.keepgoing.order.application.service.order.OrderService;
 import com.keepgoing.order.domain.order.OrderState;
 import com.keepgoing.order.presentation.dto.request.CreateOrderRequest;
 import com.keepgoing.order.presentation.dto.response.BaseResponseDto;
 import com.keepgoing.order.presentation.dto.response.CreateOrderResponse;
+import com.keepgoing.order.presentation.dto.response.DeleteOrderInfo;
 import com.keepgoing.order.presentation.dto.response.OrderInfo;
 import com.keepgoing.order.presentation.dto.response.OrderStateInfo;
 import com.keepgoing.order.presentation.dto.response.UpdateOrderStateInfo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Path;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +38,12 @@ public class OrderControllerV1 implements OrderController{
     @Override
     @PostMapping("/v1/orders")
     public BaseResponseDto<CreateOrderResponse> create(@Valid @RequestBody CreateOrderRequest request) {
-        CreateOrderResponse response = orderService.create(request.toCommand());
+
+        // 임시 로그인
+        Long memberId = 1L;
+
+        CreateOrderResponse response = orderService.create(request.toCommand(memberId));
+
         return BaseResponseDto.success(response);
     }
 
@@ -85,5 +94,16 @@ public class OrderControllerV1 implements OrderController{
     public BaseResponseDto<UpdateOrderStateInfo> updateStateToPaid(@PathVariable @NotNull UUID orderId) {
         UpdateOrderStateInfo orderStateInfo = orderService.updateStateToPaid(orderId);
         return BaseResponseDto.success(orderStateInfo);
+    }
+
+    @Override
+    @DeleteMapping("/v1/orders/{orderId}")
+    public BaseResponseDto<DeleteOrderInfo> deleteOrder(@PathVariable @NotNull UUID orderId) {
+
+        // 임시 로그인
+        Long memberId = 1L;
+        DeleteOrderInfo deleteOrderInfo = orderService.deleteOrder(orderId, memberId);
+
+        return BaseResponseDto.success(deleteOrderInfo);
     }
 }

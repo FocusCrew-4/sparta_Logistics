@@ -9,14 +9,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductInfo {
 
-    @JsonProperty("product_id")
+    @JsonProperty("id")
     private String productId;
 
+    @JsonProperty("productName")
+    private String productName;
 
-    @JsonProperty("hub_id")
+    @JsonProperty("hubId")
     private String hubId;
 
-    @JsonProperty("product_name")
-    private String productName;
+    @JsonProperty("productPrice")
+    private String productPrice;
 
 }
