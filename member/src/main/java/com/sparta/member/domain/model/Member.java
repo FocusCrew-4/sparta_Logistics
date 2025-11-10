@@ -1,12 +1,15 @@
 package com.sparta.member.domain.model;
 
 import static com.sparta.member.domain.support.ArgsValidator.requireAllNonNull;
+import static org.springframework.util.Assert.hasText;
 
 import com.sparta.member.domain.enums.Role;
 import com.sparta.member.domain.enums.Status;
 import com.sparta.member.domain.vo.AccountInfo;
 import com.sparta.member.domain.vo.Affiliation;
+import com.sparta.member.domain.vo.Type;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Member {
 
@@ -147,5 +150,54 @@ public class Member {
         );
 
         return new Member(id, name, password, email, slackId, affiliation, role, status, createdAt, updatedAt, deletedAt, deleteBy);
+    }
+
+    public Member changeInfo(
+        String name,
+        String password,
+        String email,
+        String slackId,
+        Type affiliationType,
+        UUID affiliationId,
+        String affiliationName,
+        Role role,
+        Status status
+    ) {
+        // 기존 값 유지
+        String newName = hasText(name) ? name : this.accountInfo.name();
+        String newPassword = hasText(password) ? password : this.accountInfo.password();
+        String newEmail = hasText(email) ? email : this.accountInfo.email();
+        String newSlackId = hasText(slackId) ? slackId : this.accountInfo.slackId();
+
+        Type newType = affiliationType != null ? affiliationType : this.affiliation.type();
+        UUID newAffiliationId = affiliationId != null ? affiliationId : this.affiliation.id();
+        String newAffiliationName = hasText(affiliationName) ? affiliationName : this.affiliation.name();
+
+        Role newRole = role != null ? role : this.role;
+        Status newStatus = status != null ? status : this.status;
+
+        // 새 VO 구성
+        AccountInfo newAccountInfo = new AccountInfo(newName, newPassword, newEmail, newSlackId);
+        Affiliation newAffiliation = new Affiliation(newType, newAffiliationId, newAffiliationName);
+
+        // 새로운 Member 인스턴스 반환 (불변성 유지)
+        return new Member(
+            this.id,
+            newAccountInfo.name(),
+            newAccountInfo.password(),
+            newAccountInfo.email(),
+            newAccountInfo.slackId(),
+            newAffiliation,
+            newRole,
+            newStatus,
+            this.createdAt,
+            LocalDateTime.now(), // updatedAt
+            this.deletedAt,
+            this.deleteBy
+        );
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 }
