@@ -3,6 +3,8 @@ package com.keepgoing.delivery.delivery.application.facade;
 import com.keepgoing.delivery.deliveryperson.application.service.DeliveryPersonService;
 import com.keepgoing.delivery.deliveryperson.domain.entity.DeliveryPerson;
 import com.keepgoing.delivery.deliveryperson.domain.entity.DeliveryPersonType;
+import com.keepgoing.delivery.global.exception.BusinessException;
+import com.keepgoing.delivery.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -40,9 +42,7 @@ public class DeliveryPersonFacade {
     public void validateDeliveryPerson(Long userId, String expectedType) {
         DeliveryPerson person = deliveryPersonService.findDeliveryPerson(userId);
         if (!person.getType().toString().equals(expectedType)) {
-            throw new IllegalArgumentException(
-                    String.format("배송담당자 타입이 %s가 아닙니다.", expectedType)
-            );
+            throw new BusinessException(ErrorCode.DELIVERY_PERSON_INVALID_TYPE);
         }
     }
 }

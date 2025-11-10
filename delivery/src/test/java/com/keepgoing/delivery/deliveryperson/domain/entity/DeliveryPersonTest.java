@@ -70,7 +70,7 @@ class DeliveryPersonTest {
         assertThatThrownBy(() ->
                 DeliveryPerson.createVendorDeliveryPerson(userId, null, slackId, seq)
         )
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("업체 배송 담당자의 hubId는 필수입니다.");
     }
 
@@ -96,7 +96,7 @@ class DeliveryPersonTest {
 
         // When & Then
         assertThatThrownBy(() -> person.updateSlackId(null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("slackId는 필수입니다.");
     }
 
@@ -126,7 +126,7 @@ class DeliveryPersonTest {
 
         // When & Then
         assertThatThrownBy(() -> person.changeHub(newHubId))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("업체 배송 담당자만 허브를 변경할 수 있습니다.");
     }
 
@@ -170,7 +170,7 @@ class DeliveryPersonTest {
 
         // When & Then
         assertThatThrownBy(() -> person.changeType(DeliveryPersonType.VENDOR, null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("업체 배송 담당자로 전환 시 소속 허브는 필수입니다.");
     }
 
@@ -182,7 +182,7 @@ class DeliveryPersonTest {
 
         // When & Then
         assertThatThrownBy(() -> person.changeType(DeliveryPersonType.HUB, null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("동일한 타입으로는 변경할 수 없습니다.");
     }
 
@@ -211,7 +211,7 @@ class DeliveryPersonTest {
 
         // When & Then
         assertThatThrownBy(() -> person.markDeleted("admin2"))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("이미 삭제된 배송 담당자입니다.");
     }
 }

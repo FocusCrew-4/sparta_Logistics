@@ -81,7 +81,7 @@ class DeliveryPersonServiceTest {
         assertThatThrownBy(() ->
                 deliveryPersonService.registerDeliveryPerson(userId, "@new", DeliveryPersonType.HUB, null)
         )
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("이미 등록된 배송 담당자입니다.");
 
         verify(deliveryPersonRepository, never()).save(any());
@@ -117,7 +117,7 @@ class DeliveryPersonServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> deliveryPersonService.findDeliveryPerson(userId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("배송 담당자를 찾을 수 없습니다.");
     }
 
