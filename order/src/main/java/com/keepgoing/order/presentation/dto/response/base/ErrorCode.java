@@ -1,4 +1,4 @@
-package com.keepgoing.order.presentation.dto.response;
+package com.keepgoing.order.presentation.dto.response.base;
 
 public record ErrorCode (
     String code,

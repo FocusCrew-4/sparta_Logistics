@@ -1,4 +1,4 @@
-package com.keepgoing.order.presentation.dto.response;
+package com.keepgoing.order.presentation.dto.response.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
