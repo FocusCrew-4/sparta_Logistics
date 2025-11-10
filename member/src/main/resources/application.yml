@@ -3,8 +3,8 @@
 spring:
   application:
     name: member-service
-#  profiles:
-#     active: local
+  profiles:
+    active: local
   config:
     import: "optional:configserver:"
   cloud:
@@ -17,11 +17,10 @@ spring:
         max-attempts: 6
         initial-interval: 2000
         multiplier: 1.5
-      profile: prod
 
 eureka:
   client:
     service-url:
-      defaultZone: http://${EUREKA-HOST:localhost}:18080/eureka/
+      defaultZone: http://${EUREKA_HOST:localhost}:18080/eureka/
   instance:
     hostname: member-service
