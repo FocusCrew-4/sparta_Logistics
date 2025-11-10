@@ -1,7 +1,7 @@
-package com.sparta.member.application.mapper;
+package com.keepgoing.member.application.mapper;
 
-import com.sparta.member.domain.model.Member;
-import com.sparta.member.interfaces.dto.StatusUpdateResponseDto;
+import com.keepgoing.member.domain.model.Member;
+import com.keepgoing.member.interfaces.dto.StatusUpdateResponseDto;
 
 public interface ApplicationMapper {
 

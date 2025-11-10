@@ -1,7 +1,7 @@
-package com.sparta.member.infrastructure.config;
+package com.keepgoing.member.infrastructure.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
-import com.sparta.member.infrastructure.jwt.TokenProvider;
+import com.keepgoing.member.infrastructure.jwt.TokenProvider;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;

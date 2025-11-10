@@ -1,4 +1,4 @@
-package com.sparta.member.application.dto;
+package com.keepgoing.member.application.dto;
 
 public record LoginDto(
     String email,

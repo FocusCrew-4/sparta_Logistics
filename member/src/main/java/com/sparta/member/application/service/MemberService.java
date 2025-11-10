@@ -1,15 +1,15 @@
-package com.sparta.member.application.service;
+package com.keepgoing.member.application.service;
 
-import com.sparta.member.domain.enums.Status;
-import com.sparta.member.domain.vo.Affiliation;
-import com.sparta.member.interfaces.dto.SignUpRequestDto;
-import com.sparta.member.application.mapper.ApplicationMapper;
-import com.sparta.member.domain.model.Member;
-import com.sparta.member.domain.repository.MemberRepository;
-import com.sparta.member.global.CustomException;
-import com.sparta.member.global.ErrorCode;
-import com.sparta.member.interfaces.dto.StatusChangeRequestDto;
-import com.sparta.member.interfaces.dto.StatusUpdateResponseDto;
+import com.keepgoing.member.domain.enums.Status;
+import com.keepgoing.member.domain.vo.Affiliation;
+import com.keepgoing.member.interfaces.dto.SignUpRequestDto;
+import com.keepgoing.member.application.mapper.ApplicationMapper;
+import com.keepgoing.member.domain.model.Member;
+import com.keepgoing.member.domain.repository.MemberRepository;
+import com.keepgoing.member.global.CustomException;
+import com.keepgoing.member.global.ErrorCode;
+import com.keepgoing.member.interfaces.dto.StatusChangeRequestDto;
+import com.keepgoing.member.interfaces.dto.StatusUpdateResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

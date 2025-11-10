@@ -1,4 +1,4 @@
-package com.sparta.member.infrastructure.config;
+package com.keepgoing.member.infrastructure.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 

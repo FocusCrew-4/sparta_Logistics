@@ -1,7 +1,7 @@
-package com.sparta.member.global;
+package com.keepgoing.member.global;
 
 import com.fasterxml.jackson.databind.ser.Serializers.Base;
-import com.sparta.member.application.dto.BaseResponseDto;
+import com.keepgoing.member.application.dto.BaseResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

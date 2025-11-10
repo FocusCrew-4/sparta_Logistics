@@ -1,7 +1,7 @@
-package com.sparta.member.application.dto;
+package com.keepgoing.member.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sparta.member.global.ErrorCode;
+import com.keepgoing.member.global.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

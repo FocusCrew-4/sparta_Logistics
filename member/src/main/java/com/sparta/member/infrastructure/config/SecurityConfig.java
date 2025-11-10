@@ -1,4 +1,4 @@
-package com.sparta.member.infrastructure.config;
+package com.keepgoing.member.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

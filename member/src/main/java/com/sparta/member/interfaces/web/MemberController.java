@@ -1,12 +1,12 @@
-package com.sparta.member.interfaces.web;
+package com.keepgoing.member.interfaces.web;
 
-import com.sparta.member.application.dto.BaseResponseDto;
-import com.sparta.member.application.dto.LoginDto;
-import com.sparta.member.application.service.AuthService;
-import com.sparta.member.application.service.MemberService;
-import com.sparta.member.interfaces.dto.SignUpRequestDto;
-import com.sparta.member.interfaces.dto.StatusChangeRequestDto;
-import com.sparta.member.interfaces.dto.StatusUpdateResponseDto;
+import com.keepgoing.member.application.dto.BaseResponseDto;
+import com.keepgoing.member.application.dto.LoginDto;
+import com.keepgoing.member.application.service.AuthService;
+import com.keepgoing.member.application.service.MemberService;
+import com.keepgoing.member.interfaces.dto.SignUpRequestDto;
+import com.keepgoing.member.interfaces.dto.StatusChangeRequestDto;
+import com.keepgoing.member.interfaces.dto.StatusUpdateResponseDto;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

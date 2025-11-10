@@ -1,6 +1,6 @@
-package com.sparta.member.infrastructure.userDetails;
+package com.keepgoing.member.infrastructure.userDetails;
 
-import com.sparta.member.infrastructure.persistence.jpa.entity.MemberJpa;
+import com.keepgoing.member.infrastructure.persistence.jpa.entity.MemberJpa;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;

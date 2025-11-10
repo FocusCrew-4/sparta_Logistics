@@ -1,8 +1,8 @@
-package com.sparta.member.application.service;
+package com.keepgoing.member.application.service;
 
-import com.sparta.member.application.dto.LoginDto;
-import com.sparta.member.infrastructure.jwt.JwtProvider;
-import com.sparta.member.infrastructure.userDetails.CustomUserDetails;
+import com.keepgoing.member.application.dto.LoginDto;
+import com.keepgoing.member.infrastructure.jwt.JwtProvider;
+import com.keepgoing.member.infrastructure.userDetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
