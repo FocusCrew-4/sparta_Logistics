@@ -1,6 +1,6 @@
-package com.sparta.member.infrastructure.persistence.jpa.querydsl;
+package com.keepgoing.member.infrastructure.persistence.jpa.querydsl;
 
-import com.sparta.member.infrastructure.persistence.jpa.entity.MemberJpa;
+import com.keepgoing.member.infrastructure.persistence.jpa.entity.MemberJpa;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
