@@ -229,4 +229,16 @@ public class Order{
         return cancelState != CancelState.NONE;
     }
 
+    public boolean isPaid() {
+        return orderState == OrderState.PAID;
+    }
+
+    public boolean isAwaitingPayment() {
+        return orderState == OrderState.AWAITING_PAYMENT;
+    }
+
+    public boolean isNotAwaitPayment() {
+        return !isAwaitingPayment();
+    }
+
 }

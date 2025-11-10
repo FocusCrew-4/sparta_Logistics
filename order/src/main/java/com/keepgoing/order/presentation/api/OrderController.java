@@ -1,5 +1,6 @@
 package com.keepgoing.order.presentation.api;
 
+import com.keepgoing.order.domain.order.PaymentApplyResult;
 import com.keepgoing.order.presentation.dto.response.api.DeleteOrderInfo;
 import com.keepgoing.order.presentation.dto.response.api.OrderInfo;
 import com.keepgoing.order.presentation.dto.request.CreateOrderRequest;
@@ -22,7 +23,7 @@ public interface OrderController {
 
     BaseResponseDto<OrderStateInfo> getOrderState(UUID orderId);
 
-    BaseResponseDto<UpdateOrderStateInfo> updateStateToPaid(@PathVariable UUID orderId);
+    BaseResponseDto<PaymentApplyResult> updateStateToPaid(@PathVariable UUID orderId);
 
     BaseResponseDto<DeleteOrderInfo> deleteOrder(UUID orderId);
 }

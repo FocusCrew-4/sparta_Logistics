@@ -1,6 +1,7 @@
 package com.keepgoing.order.presentation.api;
 
 import com.keepgoing.order.application.service.order.OrderService;
+import com.keepgoing.order.domain.order.PaymentApplyResult;
 import com.keepgoing.order.presentation.dto.request.CreateOrderRequest;
 import com.keepgoing.order.presentation.dto.response.base.BaseResponseDto;
 import com.keepgoing.order.presentation.dto.response.api.CreateOrderResponse;
@@ -86,9 +87,9 @@ public class OrderControllerV1 implements OrderController{
 
     @Override
     @PatchMapping("/v1/orders/{orderId}/confirm-payment")
-    public BaseResponseDto<UpdateOrderStateInfo> updateStateToPaid(@PathVariable @NotNull UUID orderId) {
-        UpdateOrderStateInfo orderStateInfo = orderService.updateStateToPaid(orderId);
-        return BaseResponseDto.success(orderStateInfo);
+    public BaseResponseDto<PaymentApplyResult> updateStateToPaid(@PathVariable @NotNull UUID orderId) {
+        PaymentApplyResult result = orderService.updateStateToPaid(orderId);
+        return BaseResponseDto.success(result);
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.keepgoing.order.application.dto.CreateOrderPayloadForNotification;
 import com.keepgoing.order.application.exception.DeleteOrderFailException;
 import com.keepgoing.order.application.exception.InvalidOrderStateException;
 import com.keepgoing.order.application.exception.NotFoundOrderException;
-import com.keepgoing.order.application.exception.StateUpdateFailedException;
+import com.keepgoing.order.domain.order.PaymentApplyResult;
 import com.keepgoing.order.domain.outbox.AggregateType;
 import com.keepgoing.order.domain.outbox.EventType;
 import com.keepgoing.order.domain.order.Order;
@@ -21,7 +21,6 @@ import com.keepgoing.order.presentation.dto.response.api.CreateOrderResponse;
 import com.keepgoing.order.presentation.dto.response.api.DeleteOrderInfo;
 import com.keepgoing.order.presentation.dto.response.api.OrderInfo;
 import com.keepgoing.order.presentation.dto.response.api.OrderStateInfo;
-import com.keepgoing.order.presentation.dto.response.api.UpdateOrderStateInfo;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -180,39 +179,57 @@ public class OrderService {
             .orElseThrow();
         if (order.getOrderState() == OrderState.FAILED) return;
         order.changeOrderStateToFail();
-
-        // TODO: 실패 후 후속처리 필요 (Outbox 혹은 다른 방식 적용)
     }
 
     @Transactional
-    public UpdateOrderStateInfo updateStateToPaid(UUID orderId) {
+    public PaymentApplyResult updateStateToPaid(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
             () -> new NotFoundOrderException("주문을 찾을 수 없습니다. : 상태 변경 이전(결제)")
         );
 
-        OrderState previousState = order.getOrderState();
-
-        if (previousState != OrderState.AWAITING_PAYMENT) {
-            throw new InvalidOrderStateException("주문 상태가 유효하지 않습니다. : 상태 변경 이전(결제)");
+        if (order.isCancellationInProgress()) {
+            return PaymentApplyResult.CANCELLED;
         }
 
-        LocalDateTime now = LocalDateTime.now(clock);
+        if (order.isPaid()) {
+            return PaymentApplyResult.ALREADY_PAID;
+        }
+
         int updated = orderRepository.updateOrderStateToPaidForPayment(
             orderId,
             order.getVersion(),
-            now
+            LocalDateTime.now(clock)
         );
 
-        if (updated == 0) {
-            throw new StateUpdateFailedException("주문 상태를 변경하는 것에 실패했습니다.");
+        if (updated == 1) {
+            Order fresh = orderRepository.findById(orderId).orElseThrow();
+            String payloadForNotification = makePayloadForNotification(fresh);
+            orderOutboxRepository.save(OrderOutbox.create(
+                UUID.randomUUID(),
+                AggregateType.ORDER,
+                fresh.getId().toString(),
+                EventType.PAID,
+                OutBoxState.NOTIFICATION_PENDING,
+                payloadForNotification,
+                LocalDateTime.now(clock)
+            ));
+
+            return PaymentApplyResult.APPLIED;
         }
 
-        return UpdateOrderStateInfo.create(
-            orderId,
-            previousState,
-            OrderState.PAID,
-            now
-        );
+        Order check = orderRepository.findById(orderId).orElseThrow();
+
+        if (check.isPaid()) {
+            return PaymentApplyResult.ALREADY_PAID;
+        }
+
+        if (check.isCancellationInProgress()) {
+            return PaymentApplyResult.CANCELLED;
+        }
+
+        // AWAITING_PAYMENT인데 갱신 실패, 오류 발생
+        // TODO: 나중에 해당 케이스에 대한 후속 처리가 필요해 보임
+        return PaymentApplyResult.ALREADY_PAID;
     }
 
 
