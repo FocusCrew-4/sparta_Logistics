@@ -87,6 +87,7 @@ public class MemberController {
             .build();
     }
 
+    @PreAuthorize("hasRole('MASTER')")
     @GetMapping("/search")
     public ResponseEntity<BaseResponseDto<Page<MemberInfoResponseDto>>> search(
         SearchRequestDto searchRequestDto,
