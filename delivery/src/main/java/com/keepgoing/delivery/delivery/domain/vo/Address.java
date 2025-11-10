@@ -1,4 +1,4 @@
-package com.keepgoing.delivery.delivery.domain.entity;
+package com.keepgoing.delivery.delivery.domain.vo;
 
 public record Address(
         String street,
