@@ -1,4 +1,4 @@
-package com.keepgoing.order.presentation.dto.response;
+package com.keepgoing.order.presentation.dto.response.api;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

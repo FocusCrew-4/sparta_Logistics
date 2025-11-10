@@ -1,8 +1,7 @@
-package com.keepgoing.order.presentation.dto.response;
+package com.keepgoing.order.presentation.dto.response.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.keepgoing.order.domain.order.OrderState;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
