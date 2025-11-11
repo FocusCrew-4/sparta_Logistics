@@ -4,9 +4,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,9 @@ public class JwtProviderImpl implements JwtProvider{
 
     @Value("${jwt.secret}")
     private String secretKey;
+
+    @Value("${jwt.validity}")
+    private long tokenValidity;
 
     @Override
     public TokenStatus validateToken(String token) {
@@ -117,5 +122,20 @@ public class JwtProviderImpl implements JwtProvider{
     private Key getKey() {
         // 키를 String 타입으로 넘길 수 없어 Key 객체로 만들어 전달
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public String createAccessToken(String email, String role, String userId, String affiliationId) {
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("role", role);
+        claims.put("userId", userId);
+        claims.put("affiliationId", affiliationId);
+
+        return Jwts.builder()
+            .setClaims(claims)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + tokenValidity))
+            .signWith(this.getKey(), SignatureAlgorithm.HS256)
+            .compact();
     }
 }

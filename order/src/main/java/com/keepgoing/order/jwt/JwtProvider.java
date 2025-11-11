@@ -15,4 +15,6 @@ public interface JwtProvider {
     String getAffiliationId(String token);
 
     Authentication getAuthentication(String token);
+
+    String createAccessToken(String email, String role, String userId, String affiliationId);
 }

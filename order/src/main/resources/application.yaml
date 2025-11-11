@@ -73,7 +73,7 @@ eureka:
 
 jwt:
   secret: dfkldfdfdfdfdfdfdfdfdfdfdfdfdfdfd
-
+  validity: 150000
 
 # docker에서 띄우지 않고 사용하기 위한 yml 설정
 #spring:
