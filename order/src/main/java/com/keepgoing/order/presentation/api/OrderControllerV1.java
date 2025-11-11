@@ -11,7 +11,6 @@ import com.keepgoing.order.presentation.dto.response.api.DeleteOrderInfo;
 import com.keepgoing.order.presentation.dto.response.api.OrderInfo;
 import com.keepgoing.order.presentation.dto.response.api.OrderStateInfo;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -66,7 +65,7 @@ public class OrderControllerV1 implements OrderController{
     @Override
     @GetMapping("/v1/orders/{orderId}")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUB', 'DELIVERY', 'COMPANY')")
-    public BaseResponseDto<OrderInfo> getOrderInfoList(@PathVariable @NotNull UUID orderId) {
+    public BaseResponseDto<OrderInfo> getOrderInfoList(@PathVariable UUID orderId) {
         return BaseResponseDto.success(orderService.searchOrderOne(orderId));
     }
 
@@ -85,14 +84,14 @@ public class OrderControllerV1 implements OrderController{
 
     @Override
     @GetMapping("/v1/orders/{orderId}/status")
-    public BaseResponseDto<OrderStateInfo> getOrderState(@PathVariable @NotNull UUID orderId) {
+    public BaseResponseDto<OrderStateInfo> getOrderState(@PathVariable UUID orderId) {
         OrderStateInfo orderStateInfo = orderService.findOrderState(orderId);
         return BaseResponseDto.success(orderStateInfo);
     }
 
     @Override
     @PatchMapping("/v1/orders/{orderId}/confirm-payment")
-    public BaseResponseDto<PaymentApplyResult> updateStateToPaid(@PathVariable @NotNull UUID orderId) {
+    public BaseResponseDto<PaymentApplyResult> updateStateToPaid(@PathVariable UUID orderId) {
         PaymentApplyResult result = orderService.updateStateToPaid(orderId);
         return BaseResponseDto.success(result);
     }
@@ -100,7 +99,7 @@ public class OrderControllerV1 implements OrderController{
     @Override
     @DeleteMapping("/v1/orders/{orderId}")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUB')")
-    public BaseResponseDto<DeleteOrderInfo> deleteOrder(@PathVariable @NotNull UUID orderId, @AuthenticationPrincipal CustomPrincipal customPrincipal) {
+    public BaseResponseDto<DeleteOrderInfo> deleteOrder(@PathVariable UUID orderId, @AuthenticationPrincipal CustomPrincipal customPrincipal) {
 
         Long memberId = customPrincipal.userId();
         DeleteOrderInfo deleteOrderInfo = orderService.deleteOrder(orderId, memberId);
