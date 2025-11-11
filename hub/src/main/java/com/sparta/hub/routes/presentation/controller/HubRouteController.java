@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,5 +21,11 @@ public class HubRouteController {
     public ResponseEntity<HubRouteResponse> createRoute(@Valid @RequestBody CreateHubRouteCommand command) {
         HubRouteResponse response = hubRouteService.createRoute(command);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<HubRouteResponse> getRoute(@PathVariable UUID id) {
+        HubRouteResponse response = hubRouteService.getRoute(id);
+        return ResponseEntity.ok(response);
     }
 }
