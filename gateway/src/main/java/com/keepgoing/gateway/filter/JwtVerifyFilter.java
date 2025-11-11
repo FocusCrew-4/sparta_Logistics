@@ -59,10 +59,11 @@ public class JwtVerifyFilter implements Ordered, GlobalFilter {
             .uri("http://member-service/v1/internal/member")
             .header("Authorization", authHeader)
             .retrieve()
+            // TODO: BaseEntity 로 감싸져서 오는 코드 해석
             .bodyToMono(MemberResponseDto.class)
             .flatMap(member -> {
-                boolean isValid = validateMemberClaims(authHeader, member);
-
+                boolean isValid = validateMemberClaims(token, member);
+                log.info(member.toString());
                 if (!isValid) {
                     log.warn("Invalid member claims for member '{}'", member);
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -84,8 +85,11 @@ public class JwtVerifyFilter implements Ordered, GlobalFilter {
      */
     private boolean validateMemberClaims(String authHeader, MemberResponseDto member) {
         Jwt jwt = jwtDecoder.decode(authHeader);
+        log.debug("jwt: {}", jwt);
         String requestRole = jwt.getClaims().get("role").toString();
         String requestUserId = jwt.getClaims().get("userId").toString();
+        log.debug("requestUserId: {}", requestUserId);
+        log.debug("requestRole: {}", requestRole);
 
         return requestRole.equals(member.role())
             && requestUserId.equals(member.userId().toString())
