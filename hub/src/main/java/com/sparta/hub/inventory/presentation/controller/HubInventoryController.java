@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/inventory")
@@ -40,5 +41,12 @@ public class HubInventoryController {
     public ResponseEntity<HubInventoryResponse> adjustInventory(
             @Valid @RequestBody AdjustInventoryCommand command) {
         return ResponseEntity.ok(hubInventoryService.adjustInventory(command));
+    }
+
+    @GetMapping("/hubs/{hubId}/products/{productId}")
+    public ResponseEntity<HubInventoryResponse> getInventory(
+            @PathVariable UUID hubId,
+            @PathVariable UUID productId) {
+        return ResponseEntity.ok(hubInventoryService.getInventory(hubId, productId));
     }
 }
