@@ -92,7 +92,7 @@ public class HubRouteService {
         HubRoute route = hubRouteRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new IllegalArgumentException("허브 이동 경로를 찾을 수 없습니다."));
 
-        route.delete(); // Soft delete (deletedAt 세팅)
+        route.delete();
         hubRouteRepository.save(route);
     }
 
