@@ -241,4 +241,7 @@ public class Order{
         return !isAwaitingPayment();
     }
 
+    public boolean isNotCancelRequested() {
+        return cancelState != CancelState.CANCEL_REQUESTED;
+    }
 }

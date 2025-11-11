@@ -1,5 +1,6 @@
 package com.keepgoing.order.infrastructure.order;
 
+import com.keepgoing.order.domain.order.CancelState;
 import com.keepgoing.order.domain.order.Order;
 import com.keepgoing.order.domain.order.OrderState;
 import java.time.LocalDateTime;
@@ -19,6 +20,10 @@ public interface OrderRepositoryCustom {
 
     Optional<OrderState> findOrderStateById(UUID orderId);
 
+    Page<UUID> findByCancelState(CancelState state, Collection<OrderState> orderStates, Pageable pageable);
+
+    Page<UUID> findPendingCancelIds(Collection<CancelState> cancelStates, Collection<OrderState> orderStates, Pageable pageable);
+
     // command
     int claim(UUID orderId, OrderState beforeState, OrderState afterState, LocalDateTime now);
 
@@ -33,4 +38,22 @@ public interface OrderRepositoryCustom {
     int updateOrderStateToPaidForPayment(UUID orderId, Long version, LocalDateTime now);
 
     int deleteOrder(UUID orderId, Long memberId, LocalDateTime now, Long version);
+
+    int updateCancelState(UUID orderId, OrderState orderState, CancelState state, LocalDateTime now);
+
+    int updateCancelRequired(UUID orderId, OrderState orderState, LocalDateTime now);
+
+    int cancelClaim(UUID orderId, Collection<OrderState> orderStates, CancelState beforeCancelState,
+        CancelState afterCancelState, LocalDateTime now);
+
+    int updateCancelStateToOrderCancelled(UUID orderId, LocalDateTime now);
+
+    int updateCancelStateToOrderCancelAwaiting(UUID orderId, LocalDateTime now);
+
+    int updateCancelStateToInventoryReservationCancelAwaiting(UUID orderId, LocalDateTime now);
+
+    int revertPaymentCancelToAwaiting(UUID orderId, LocalDateTime now);
+
+    int revertInventoryReservationCancelToAwaiting(UUID orderId, LocalDateTime now);
+
 }

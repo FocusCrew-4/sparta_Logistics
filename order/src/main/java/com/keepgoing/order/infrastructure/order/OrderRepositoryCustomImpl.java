@@ -88,6 +88,54 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         return Optional.ofNullable(orderState);
     }
 
+    @Override
+    public Page<UUID> findByCancelState(CancelState state, Collection<OrderState> orderStates, Pageable pageable) {
+
+        List<UUID> content = queryFactory
+            .select(order.id)
+            .from(order)
+            .where(
+                order.cancelState.eq(state),
+                order.orderState.in(orderStates)
+            )
+            .orderBy(order.createdAt.asc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+            .select(order.count())
+            .from(order)
+            .where(
+                order.cancelState.eq(state),
+                order.orderState.in(orderStates)
+            );
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<UUID> findPendingCancelIds(Collection<CancelState> cancelStates, Collection<OrderState> orderStates, Pageable pageable) {
+        List<UUID> content = queryFactory
+            .select(order.id)
+            .from(order)
+            .where(
+                order.cancelState.in(cancelStates),
+                order.orderState.in(orderStates)
+            )
+            .orderBy(order.createdAt.asc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+            .select(order.count())
+            .from(order)
+            .where(
+                order.cancelState.in(cancelStates),
+                order.orderState.in(orderStates)
+            );
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
 
     // Command
     @Override
@@ -236,4 +284,140 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         return orderSpecifiers;
     }
 
+    @Override
+    public int updateCancelState(UUID orderId, OrderState orderState, CancelState state, LocalDateTime now) {
+
+        long updated = queryFactory
+            .update(order)
+            .set(order.cancelState, state)
+            .set(order.updatedAt, now)
+            .where(
+                order.id.eq(orderId),
+                order.cancelState.eq(CancelState.CANCEL_REQUESTED),
+                order.orderState.eq(orderState)
+
+            )
+            .execute();
+
+        em.flush(); em.clear();
+
+        return (int) updated;
+    }
+
+    public int updateCancelRequired(UUID orderId, OrderState orderState, LocalDateTime now) {
+
+        long updated = queryFactory
+            .update(order)
+            .set(order.cancelState, CancelState.CANCEL_REQUESTED)
+            .set(order.updatedAt, now)
+            .where(
+                order.id.eq(orderId),
+                order.orderState.eq(orderState),
+                order.cancelState.eq(CancelState.NONE)
+
+            )
+            .execute();
+
+        em.flush(); em.clear();
+
+        return (int) updated;
+    }
+
+    public int cancelClaim(UUID orderId, Collection<OrderState> orderStates , CancelState beforeCancelState, CancelState afterCancelState , LocalDateTime now) {
+        long updated = queryFactory
+            .update(order)
+            .set(order.cancelState, afterCancelState)
+            .set(order.updatedAt, now)
+            .where(
+                order.id.eq(orderId),
+                order.orderState.in(orderStates),
+                order.cancelState.eq(beforeCancelState)
+            )
+            .execute();
+
+        em.flush(); em.clear();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int updateCancelStateToOrderCancelled(UUID orderId, LocalDateTime now) {
+        long updated = queryFactory
+            .update(order)
+            .set(order.orderState, OrderState.CANCELED)
+            .set(order.cancelState, CancelState.ORDER_CANCELLED)
+            .set(order.updatedAt, now)
+            .where(
+                order.id.eq(orderId),
+                order.cancelState.eq(CancelState.ORDER_CANCEL_IN_PROGRESS)
+            )
+            .execute();
+
+        em.flush(); em.clear();
+        return (int) updated;
+    }
+
+    @Override
+    public int updateCancelStateToOrderCancelAwaiting(UUID orderId, LocalDateTime now) {
+
+        long updated = queryFactory
+            .update(order)
+            .set(order.cancelState, CancelState.ORDER_CANCEL_AWAITING)
+            .set(order.updatedAt, now)
+            .where(
+                order.id.eq(orderId),
+                order.cancelState.eq(CancelState.INVENTORY_RESERVATION_CANCEL_IN_PROGRESS)
+            )
+            .execute();
+
+        em.flush(); em.clear();
+        return (int) updated;
+
+    }
+
+    @Override
+    public int updateCancelStateToInventoryReservationCancelAwaiting(UUID orderId, LocalDateTime now) {
+        long updated = queryFactory
+            .update(order)
+            .set(order.cancelState, CancelState.INVENTORY_RESERVATION_CANCEL_AWAITING)
+            .set(order.updatedAt, now)
+            .where(
+                order.id.eq(orderId),
+                order.cancelState.eq(CancelState.PAYMENT_CANCEL_IN_PROGRESS)
+            )
+            .execute();
+
+        em.flush(); em.clear();
+        return (int) updated;
+    }
+
+    @Override
+    public int revertPaymentCancelToAwaiting(UUID orderId, LocalDateTime now) {
+        long updated = queryFactory
+            .update(order)
+            .set(order.cancelState, CancelState.PAYMENT_CANCEL_AWAITING)
+            .set(order.updatedAt, now)
+            .where(
+                order.id.eq(orderId),
+                order.cancelState.eq(CancelState.PAYMENT_CANCEL_IN_PROGRESS)
+            )
+            .execute();
+        em.flush(); em.clear();
+        return (int) updated;
+    }
+
+    @Override
+    public int revertInventoryReservationCancelToAwaiting(UUID orderId, LocalDateTime now) {
+        long updated = queryFactory
+            .update(order)
+            .set(order.cancelState, CancelState.INVENTORY_RESERVATION_CANCEL_AWAITING)
+            .set(order.updatedAt, now)
+            .where(
+                order.id.eq(orderId),
+                order.cancelState.eq(CancelState.INVENTORY_RESERVATION_CANCEL_IN_PROGRESS)
+            )
+            .execute();
+        em.flush(); em.clear();
+        return (int) updated;
+    }
 }

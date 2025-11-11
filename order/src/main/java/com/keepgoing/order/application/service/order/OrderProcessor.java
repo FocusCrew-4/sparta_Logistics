@@ -50,7 +50,7 @@ public class OrderProcessor {
                     );
 
                     if (updateResult1 == 0) {
-                        log.error("이미 작업을 진행 중이거나 상태 불일치 {}", orderId);
+                        log.error("이미 작업을 진행 중이거나 취소 작업 진행중 {}", orderId);
                         return;
                     }
 
@@ -103,7 +103,7 @@ public class OrderProcessor {
                     );
 
                     if (updateResult2 == 0) {
-                        log.error("이미 작업을 진행 중이거나 상태 불일치 {}", orderId);
+                        log.error("이미 작업을 진행 중이거나 취소 작업 진행중 {}", orderId);
                         return;
                     }
 
@@ -147,7 +147,7 @@ public class OrderProcessor {
                     );
 
                     if (updateResult4 == 0) {
-                        log.error("이미 작업을 진행 중이거나 상태 불일치 {}", orderId);
+                        log.error("이미 작업을 진행 중이거나 취소 작업 진행중 {}", orderId);
                         return;
                     }
 

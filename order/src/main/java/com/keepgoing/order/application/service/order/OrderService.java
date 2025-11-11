@@ -8,6 +8,8 @@ import com.keepgoing.order.application.dto.CreateOrderPayloadForNotification;
 import com.keepgoing.order.application.exception.DeleteOrderFailException;
 import com.keepgoing.order.application.exception.InvalidOrderStateException;
 import com.keepgoing.order.application.exception.NotFoundOrderException;
+import com.keepgoing.order.application.exception.OrderCancelFailException;
+import com.keepgoing.order.domain.order.CancelState;
 import com.keepgoing.order.domain.order.PaymentApplyResult;
 import com.keepgoing.order.domain.outbox.AggregateType;
 import com.keepgoing.order.domain.outbox.EventType;
@@ -23,6 +25,7 @@ import com.keepgoing.order.presentation.dto.response.api.OrderInfo;
 import com.keepgoing.order.presentation.dto.response.api.OrderStateInfo;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
@@ -231,6 +234,68 @@ public class OrderService {
         // TODO: 나중에 해당 케이스에 대한 후속 처리가 필요해 보임
         return PaymentApplyResult.ALREADY_PAID;
     }
+
+    // 취소 요청이 들어오면 취소 예약하는 서비스
+    @Transactional
+    public void updateCancelStateCancelRequired(UUID orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+            () -> new NotFoundOrderException("주문을 찾을 수 없습니다.")
+        );
+
+        // 이미 처리된 작업
+        if (order.isCancellationInProgress()) return;
+
+        int updated = orderRepository.updateCancelRequired(
+            orderId,
+            order.getOrderState(),
+            LocalDateTime.now(clock)
+        );
+
+        if (updated == 0) {
+            Order current = orderRepository.findById(orderId).orElseThrow(
+                () -> new NotFoundOrderException("주문을 찾을 수 없습니다.")
+            );
+            if (current.isCancellationInProgress()) return;
+            throw new OrderCancelFailException("주문 취소 요청에 실패했습니다.");
+        }
+    }
+
+    @Transactional
+    public int cancelClaim(UUID orderId, Collection<OrderState> orderStates , CancelState beforeCancelState, CancelState afterCancelState) {
+        return orderRepository.cancelClaim(
+            orderId,
+            orderStates,
+            beforeCancelState,
+            afterCancelState,
+            LocalDateTime.now(clock)
+        );
+    }
+
+    @Transactional
+    public int updateCancelStateToOrderCancelled(UUID orderId) {
+        return orderRepository.updateCancelStateToOrderCancelled(orderId, LocalDateTime.now(clock));
+    }
+
+    @Transactional
+    public int updateCancelStateToOrderCancelAwaiting(UUID orderId) {
+        return orderRepository.updateCancelStateToOrderCancelAwaiting(orderId, LocalDateTime.now(clock));
+    }
+
+    @Transactional
+    public int updateCancelStateToInventoryReservationCancelAwaiting(UUID orderId) {
+        return orderRepository.updateCancelStateToInventoryReservationCancelAwaiting(orderId, LocalDateTime.now(clock));
+    }
+
+    @Transactional
+    public int revertPaymentCancelToAwaiting(UUID orderId) {
+        return orderRepository.revertPaymentCancelToAwaiting(orderId, LocalDateTime.now(clock));
+    }
+
+    @Transactional
+    public int revertInventoryReservationCancelToAwaiting(UUID orderId) {
+        return orderRepository.revertInventoryReservationCancelToAwaiting(orderId, LocalDateTime.now(clock));
+    }
+
 
 
     private String makePayloadForDelivery(Order order) {
