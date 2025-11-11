@@ -20,7 +20,9 @@ public class DeliveryDomainService {
     public List<DeliveryRoute> addRoutes(
             UUID deliveryId,
             UUID departureHubId,
-            UUID destinationHubId
+            UUID destinationHubId,
+            Distance distance,
+            Duration duration
     ) {
 
         List<DeliveryRoute> routes = new ArrayList<>();
@@ -29,8 +31,8 @@ public class DeliveryDomainService {
                 deliveryId,
                 departureHubId,
                 destinationHubId,
-                new Distance(100.0),
-                new Duration(120),
+                distance,
+                duration,
                 new RouteSeq(1)
         );
 
