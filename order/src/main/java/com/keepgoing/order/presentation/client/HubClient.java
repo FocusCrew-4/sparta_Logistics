@@ -1,5 +1,6 @@
 package com.keepgoing.order.presentation.client;
 
+import com.keepgoing.order.presentation.dto.request.ReservationCancelInventoryRequest;
 import com.keepgoing.order.presentation.dto.request.ReservationInventoryRequest;
 import com.keepgoing.order.presentation.dto.response.client.InventoryReservationResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -11,4 +12,8 @@ public interface HubClient {
 
     @PostMapping("/v1/inventory/allocate")
     InventoryReservationResponse reservationInventoryForProduct(@RequestBody ReservationInventoryRequest request);
+
+    @PostMapping("/v1/inventory/adjust")
+    InventoryReservationResponse reservationCancelInventoryForProduct(@RequestBody
+    ReservationCancelInventoryRequest request);
 }
