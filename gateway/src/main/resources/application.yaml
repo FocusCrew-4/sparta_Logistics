@@ -32,6 +32,11 @@ spring:
           predicates:
             - Path=/v*/products/**
 
+        - id: hub-service
+          uri: lb://hub-service
+          predicates:
+            - Path=/v*/hubs/**
+
 
 
 server:
