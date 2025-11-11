@@ -2,6 +2,7 @@ package com.keepgoing.order.presentation.api;
 
 import com.keepgoing.order.application.service.order.OrderService;
 import com.keepgoing.order.domain.order.PaymentApplyResult;
+import com.keepgoing.order.jwt.CustomPrincipal;
 import com.keepgoing.order.presentation.dto.request.CreateOrderRequest;
 import com.keepgoing.order.presentation.dto.response.api.CancelOrderResponse;
 import com.keepgoing.order.presentation.dto.response.base.BaseResponseDto;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,11 +37,10 @@ public class OrderControllerV1 implements OrderController{
     @Override
     @PostMapping("/v1/orders")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUB', 'DELIVERY', 'COMPANY')")
-    public BaseResponseDto<CreateOrderResponse> create(@Valid @RequestBody CreateOrderRequest request) {
+    public BaseResponseDto<CreateOrderResponse> create(@Valid @RequestBody CreateOrderRequest request, @AuthenticationPrincipal
+        CustomPrincipal customPrincipal) {
 
-        // 임시 로그인
-        Long memberId = 1L;
-
+        Long memberId = customPrincipal.userId();
         CreateOrderResponse response = orderService.create(request.toCommand(memberId));
 
         return BaseResponseDto.success(response);
@@ -82,8 +83,6 @@ public class OrderControllerV1 implements OrderController{
         }
     }
 
-    // FIXME: 서비스 간 통신을 위한 권한이 필요함
-
     @Override
     @GetMapping("/v1/orders/{orderId}/status")
     public BaseResponseDto<OrderStateInfo> getOrderState(@PathVariable @NotNull UUID orderId) {
@@ -101,10 +100,9 @@ public class OrderControllerV1 implements OrderController{
     @Override
     @DeleteMapping("/v1/orders/{orderId}")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUB')")
-    public BaseResponseDto<DeleteOrderInfo> deleteOrder(@PathVariable @NotNull UUID orderId) {
+    public BaseResponseDto<DeleteOrderInfo> deleteOrder(@PathVariable @NotNull UUID orderId, @AuthenticationPrincipal CustomPrincipal customPrincipal) {
 
-        // 임시 로그인
-        Long memberId = 1L;
+        Long memberId = customPrincipal.userId();
         DeleteOrderInfo deleteOrderInfo = orderService.deleteOrder(orderId, memberId);
 
         return BaseResponseDto.success(deleteOrderInfo);
@@ -113,11 +111,9 @@ public class OrderControllerV1 implements OrderController{
     @Override
     @PostMapping("/v1/orders/{orderId}/cancel")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUB', 'DELIVERY', 'COMPANY')")
-    public BaseResponseDto<CancelOrderResponse> cancel(@PathVariable UUID orderId) {
+    public BaseResponseDto<CancelOrderResponse> cancel(@PathVariable UUID orderId, @AuthenticationPrincipal CustomPrincipal customPrincipal) {
 
-        // 임시 로그인
-        Long memberId = 1L;
-
+        Long memberId = customPrincipal.userId();
         CancelOrderResponse response = orderService.updateCancelStateCancelRequired(orderId, memberId);
         return BaseResponseDto.success(response);
     }
