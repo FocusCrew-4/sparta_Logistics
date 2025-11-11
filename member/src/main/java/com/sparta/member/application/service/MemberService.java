@@ -3,6 +3,7 @@ package com.sparta.member.application.service;
 import com.sparta.member.domain.vo.Affiliation;
 import com.sparta.member.interfaces.dto.RoleChangeRequestDto;
 import com.sparta.member.interfaces.dto.request.ChangeInfoRequestDto;
+import com.sparta.member.interfaces.dto.response.MemberInfoInternalResponseDto;
 import com.sparta.member.interfaces.dto.response.MemberInfoResponseDto;
 import com.sparta.member.interfaces.dto.request.SearchRequestDto;
 import com.sparta.member.interfaces.dto.request.SignUpRequestDto;
@@ -123,5 +124,9 @@ public class MemberService {
         targetMember.changRole(reqDto.role());
         System.out.println(targetMember.role().toString());
         memberRepository.save(targetMember);
+    }
+
+    public MemberInfoInternalResponseDto memberInfoForGateway(Long userId) {
+        return mapper.toMemberInfoInternalDto(memberRepository.findById(userId));
     }
 }

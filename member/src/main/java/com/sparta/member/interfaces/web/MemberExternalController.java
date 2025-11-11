@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/member")
 @RequiredArgsConstructor
-public class MemberController {
+public class MemberExternalController {
 
     private final MemberService memberService;
     private final AuthService authService;
