@@ -82,4 +82,11 @@ public class HubInventoryService {
         hubInventoryRepository.save(inventory);
         return HubInventoryResponse.from(inventory);
     }
+
+    @Transactional(readOnly = true)
+    public HubInventoryResponse getInventory(UUID hubId, UUID productId) {
+        var inventory = hubInventoryRepository.findByHubIdAndProductId(hubId, productId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품 재고를 찾을 수 없습니다."));
+        return HubInventoryResponse.from(inventory);
+    }
 }

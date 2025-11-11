@@ -41,4 +41,11 @@ public class HubInventoryController {
             @Valid @RequestBody AdjustInventoryCommand command) {
         return ResponseEntity.ok(hubInventoryService.adjustInventory(command));
     }
+
+    @GetMapping("/hubs/{hubId}/products/{productId}")
+    public ResponseEntity<HubInventoryResponse> getInventory(
+            @PathVariable UUID hubId,
+            @PathVariable UUID productId) {
+        return ResponseEntity.ok(hubInventoryService.getInventory(hubId, productId));
+    }
 }
