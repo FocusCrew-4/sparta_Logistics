@@ -4,7 +4,7 @@ import com.sparta.member.application.service.AuthService;
 import com.sparta.member.application.service.MemberService;
 import com.sparta.member.infrastructure.userDetails.CustomUserDetails;
 import com.sparta.member.interfaces.dto.BaseResponseDto;
-import com.sparta.member.interfaces.dto.RoleChangeRequestDto;
+import com.sparta.member.interfaces.dto.request.RoleChangeRequestDto;
 import com.sparta.member.interfaces.dto.request.ChangeInfoRequestDto;
 import com.sparta.member.interfaces.dto.request.LoginDto;
 import com.sparta.member.interfaces.dto.response.MemberInfoResponseDto;
