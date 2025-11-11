@@ -19,6 +19,7 @@ import com.keepgoing.order.domain.order.OrderState;
 import com.keepgoing.order.domain.outbox.OutBoxState;
 import com.keepgoing.order.infrastructure.outbox.OrderOutboxRepository;
 import com.keepgoing.order.infrastructure.order.OrderRepository;
+import com.keepgoing.order.presentation.dto.response.api.CancelOrderResponse;
 import com.keepgoing.order.presentation.dto.response.api.CreateOrderResponse;
 import com.keepgoing.order.presentation.dto.response.api.DeleteOrderInfo;
 import com.keepgoing.order.presentation.dto.response.api.OrderInfo;
@@ -237,27 +238,50 @@ public class OrderService {
 
     // 취소 요청이 들어오면 취소 예약하는 서비스
     @Transactional
-    public void updateCancelStateCancelRequired(UUID orderId) {
+    public CancelOrderResponse updateCancelStateCancelRequired(UUID orderId, Long memberId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
             () -> new NotFoundOrderException("주문을 찾을 수 없습니다.")
         );
 
+        LocalDateTime now = LocalDateTime.now(clock);
+
         // 이미 처리된 작업
-        if (order.isCancellationInProgress()) return;
+        if (order.isCancellationInProgress()) {
+            return CancelOrderResponse.fail(
+                orderId,
+                memberId,
+                now,
+                "이미 취소 요청(진행) 중입니다."
+                );
+        }
 
         int updated = orderRepository.updateCancelRequired(
             orderId,
             order.getOrderState(),
-            LocalDateTime.now(clock)
+            now
         );
 
         if (updated == 0) {
             Order current = orderRepository.findById(orderId).orElseThrow(
                 () -> new NotFoundOrderException("주문을 찾을 수 없습니다.")
             );
-            if (current.isCancellationInProgress()) return;
+            if (current.isCancellationInProgress()) {
+                return CancelOrderResponse.fail(
+                    orderId,
+                    memberId,
+                    now,
+                    "이미 취소 요청(진행) 중입니다."
+                );
+            }
             throw new OrderCancelFailException("주문 취소 요청에 실패했습니다.");
         }
+
+        return CancelOrderResponse.success(
+            orderId,
+            memberId,
+            now,
+            "주문 취소가 접수되었습니다."
+        );
     }
 
     @Transactional

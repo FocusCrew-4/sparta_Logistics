@@ -3,12 +3,12 @@ package com.keepgoing.order.presentation.api;
 import com.keepgoing.order.application.service.order.OrderService;
 import com.keepgoing.order.domain.order.PaymentApplyResult;
 import com.keepgoing.order.presentation.dto.request.CreateOrderRequest;
+import com.keepgoing.order.presentation.dto.response.api.CancelOrderResponse;
 import com.keepgoing.order.presentation.dto.response.base.BaseResponseDto;
 import com.keepgoing.order.presentation.dto.response.api.CreateOrderResponse;
 import com.keepgoing.order.presentation.dto.response.api.DeleteOrderInfo;
 import com.keepgoing.order.presentation.dto.response.api.OrderInfo;
 import com.keepgoing.order.presentation.dto.response.api.OrderStateInfo;
-import com.keepgoing.order.presentation.dto.response.api.UpdateOrderStateInfo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
@@ -101,5 +101,16 @@ public class OrderControllerV1 implements OrderController{
         DeleteOrderInfo deleteOrderInfo = orderService.deleteOrder(orderId, memberId);
 
         return BaseResponseDto.success(deleteOrderInfo);
+    }
+
+    @Override
+    @PostMapping("/v1/orders/{orderId}/cancel")
+    public BaseResponseDto<CancelOrderResponse> cancel(@PathVariable UUID orderId) {
+
+        // 임시 로그인
+        Long memberId = 1L;
+
+        CancelOrderResponse response = orderService.updateCancelStateCancelRequired(orderId, memberId);
+        return BaseResponseDto.success(response);
     }
 }
