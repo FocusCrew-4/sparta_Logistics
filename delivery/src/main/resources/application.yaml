@@ -22,7 +22,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
@@ -35,6 +35,14 @@ spring:
     password: root
     driver-class-name: org.postgresql.Driver
 
+logging:
+  level:
+    # 애플리케이션 패키지 DEBUG
+    com.keepgoing.delivery: DEBUG
+    # Hibernate SQL 출력
+    org.hibernate.SQL: DEBUG
+    # 바인딩된 파라미터 값 출력
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 server:
   port: 7070

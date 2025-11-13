@@ -25,7 +25,7 @@ public class DeliveryPersonFacade {
 
     // 특정 허브의 업체 배송담당자 목록 조회
     public List<DeliveryPerson> getVendorDeliveryPersonsByHub(UUID hubId, String userRole, UUID currentUserHubId) {
-        return deliveryPersonService.findVendorDeliveryPersonsByHub(hubId,  userRole, currentUserHubId);
+        return deliveryPersonService.findVendorDeliveryPersonsByHub(hubId, userRole, currentUserHubId);
     }
 
     // 배송담당자 검증

@@ -56,7 +56,7 @@ public class DeliveryController {
 
     // 배송 조회 (배송 id)
     @RequireRole({"HUB", "MASTER", "Delivery", "COMPANY"})
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<BaseResponseDto<DeliveryResponse>> getDelivery(
             @PathVariable UUID id
     ) {
@@ -67,7 +67,7 @@ public class DeliveryController {
 
     // 배송 조회 (주문 id)
     @RequireRole({"HUB", "MASTER", "Delivery", "COMPANY"})
-    @GetMapping("/{orderId}")
+    @GetMapping("/order/{orderId}")
     public ResponseEntity<BaseResponseDto<DeliveryResponse>> getDeliveryByOrderId(
             @PathVariable UUID orderId
     ) {
@@ -172,7 +172,7 @@ public class DeliveryController {
 
     // 배송 담당자 별 배송 경로 조회
     @RequireRole({"HUB", "MASTER"})
-    @GetMapping("/{deliveryPersonId}/routes/search")
+    @GetMapping("/deliveryPerson/{deliveryPersonId}/routes/search")
     public ResponseEntity<BaseResponseDto<List<DeliveryRouteResponse>>> getRoutesByDeliveryPerson(
             @PathVariable Long deliveryPersonId
     ) {

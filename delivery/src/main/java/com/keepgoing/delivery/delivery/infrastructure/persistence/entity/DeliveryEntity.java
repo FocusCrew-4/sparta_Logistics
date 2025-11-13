@@ -2,7 +2,6 @@ package com.keepgoing.delivery.delivery.infrastructure.persistence.entity;
 
 import com.keepgoing.delivery.delivery.domain.entity.DeliveryStatus;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,8 +15,8 @@ import java.util.UUID;
 public class DeliveryEntity {
 
     @Id
-    @Column(name = "id")
-    private UUID id;
+    @Column(name = "id", nullable = false, updatable = false)
+    private UUID id;  // 도메인에서 생성한 UUID 사용
 
     @Column(name = "order_id", nullable = false, unique = true)
     private UUID orderId;
@@ -32,7 +31,6 @@ public class DeliveryEntity {
     @Column(name = "destination_hub_id", nullable = false)
     private UUID destinationHubId;
 
-    // Address를 Embedded로 저장
     @Embedded
     private AddressJpa address;
 
@@ -96,12 +94,8 @@ public class DeliveryEntity {
 
     @PrePersist
     protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-        if (updatedAt == null) {
-            updatedAt = LocalDateTime.now();
-        }
+        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (updatedAt == null) updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate

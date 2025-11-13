@@ -14,6 +14,7 @@ import com.keepgoing.delivery.deliveryperson.domain.entity.DeliveryPerson;
 import com.keepgoing.delivery.global.exception.BusinessException;
 import com.keepgoing.delivery.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.UUID;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
@@ -46,8 +48,6 @@ public class DeliveryService {
             throw new BusinessException(ErrorCode.DELIVERY_ALREADY_EXISTS);
         }
 
-        // 허브 컨텍스트에서 경로 정보 조회
-        HubRouteResponse hubRoute = hubRouteService.getHubRoute(UUID.fromString("1bc91c30-9afa-4b08-892c-4cbfc8fb938b"), token);
 
         // 배송 생성
         Delivery delivery = Delivery.create(
@@ -58,9 +58,11 @@ public class DeliveryService {
                 recipientUserId,
                 recipientSlackId
         );
-
         // 배송 저장
         delivery = deliveryRepository.save(delivery);
+
+        // 허브 컨텍스트에서 경로 정보 조회
+        HubRouteResponse hubRoute = hubRouteService.getHubRoute(UUID.fromString("c82cd2f5-3d22-493f-9f61-e7fefb10ddd7"), token);
 
         // 배송 경로 생성
         List<DeliveryRoute> routes = deliveryDomainService.addRoutes(
@@ -73,7 +75,7 @@ public class DeliveryService {
 
         // 첫 번째 경로에 허브 배송담당자 자동 배정
         // Facade를 통해 배송담당자 목록 조회
-        List<DeliveryPerson> hubDeliveryPersons = deliveryPersonFacade.getHubDeliveryPersons();
+        List<DeliveryPerson> hubDeliveryPersons = deliveryPersonFacade.getVendorDeliveryPersonsByHub(departureHubId, "MASTER",departureHubId );
 
         // 도메인 서비스를 통해 선택
         DeliveryPerson deliveryPerson = deliveryDomainService.selectDeliveryPerson(hubDeliveryPersons);
@@ -123,36 +125,39 @@ public class DeliveryService {
                 .orElseThrow();
         deliveryRouteRepository.save(completedRoute);
 
-        // 다음 경로 처리
-        DeliveryRoute nextRoute = delivery.getRoutes().stream()
-                .filter(r -> r.getRouteSeq().value() == routeSeqValue + 1)
-                .findFirst()
-                .orElse(null);
-
-        if (nextRoute != null) {
-            // Facade를 통해 배송담당자 목록 조회
-            List<DeliveryPerson> hubDeliveryPersons = deliveryPersonFacade.getHubDeliveryPersons();
-
-            // 도메인 서비스를 통해 선택
-            DeliveryPerson assignedPerson = deliveryDomainService.selectDeliveryPerson(hubDeliveryPersons);
-
-            nextRoute.assignDeliveryPerson(assignedPerson.getId());
-            delivery.startRoute(routeSeqValue + 1);
-            deliveryRouteRepository.save(nextRoute);
-        } else {
+//        // 다음 경로 처리
+//        DeliveryRoute nextRoute = delivery.getRoutes().stream()
+//                .filter(r -> r.getRouteSeq().value() == routeSeqValue + 1)
+//                .findFirst()
+//                .orElse(null);
+//
+//        if (nextRoute != null) {
+//            // Facade를 통해 배송담당자 목록 조회
+//            List<DeliveryPerson> hubDeliveryPersons = deliveryPersonFacade.getHubDeliveryPersons();
+//
+//            // 도메인 서비스를 통해 선택
+//            DeliveryPerson assignedPerson = deliveryDomainService.selectDeliveryPerson(hubDeliveryPersons);
+//
+//            nextRoute.assignDeliveryPerson(assignedPerson.getId());
+//            delivery.startRoute(routeSeqValue + 1);
+//            deliveryRouteRepository.save(nextRoute);
+//        } else {
             // 마지막 경로 완료
             delivery.arriveAtDestHub();
 
             // Facade를 통해 업체 배송담당자 목록 조회
             List<DeliveryPerson> vendorDeliveryPersons = deliveryPersonFacade
-                    .getVendorDeliveryPersonsByHub(delivery.getDestinationHubId(), userRole, hubId);
+                    .getVendorDeliveryPersonsByHub(delivery.getDepartureHubId(), userRole, hubId);
 
             // 도메인 서비스를 통해 선택
             DeliveryPerson vendorPerson = deliveryDomainService
                     .selectDeliveryPerson(vendorDeliveryPersons);
 
             delivery.assignVendorDeliveryPerson(vendorPerson.getId());
-        }
+
+            delivery.startVendorDelivery();
+            delivery.completeDelivery();
+//        }
 
         deliveryRepository.save(delivery);
     }
@@ -190,6 +195,7 @@ public class DeliveryService {
 
         List<DeliveryRoute> routes = deliveryRouteRepository
                 .findByDeliveryIdOrderByRouteSeq(deliveryId);
+        log.debug("asdfasdfasdfasfafs{}", routes.getFirst().getId());
         delivery.loadRoutes(routes);
 
         return delivery;
