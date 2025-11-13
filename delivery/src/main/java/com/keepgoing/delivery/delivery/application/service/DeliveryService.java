@@ -8,6 +8,8 @@ import com.keepgoing.delivery.delivery.domain.repository.DeliveryRepository;
 import com.keepgoing.delivery.delivery.domain.repository.DeliveryRouteRepository;
 import com.keepgoing.delivery.delivery.domain.service.DeliveryDomainService;
 import com.keepgoing.delivery.delivery.domain.vo.*;
+import com.keepgoing.delivery.delivery.infrastructure.api.client.HubRouteService;
+import com.keepgoing.delivery.delivery.infrastructure.api.dto.HubRouteResponse;
 import com.keepgoing.delivery.deliveryperson.domain.entity.DeliveryPerson;
 import com.keepgoing.delivery.global.exception.BusinessException;
 import com.keepgoing.delivery.global.exception.ErrorCode;
@@ -27,6 +29,7 @@ public class DeliveryService {
     private final DeliveryRouteRepository deliveryRouteRepository;
     private final DeliveryDomainService deliveryDomainService;
     private final DeliveryPersonFacade deliveryPersonFacade;  // Facade 사용
+    private final HubRouteService hubRouteService;
 
     // 배송 생성
     public Delivery createDelivery(
@@ -42,6 +45,9 @@ public class DeliveryService {
             throw new BusinessException(ErrorCode.DELIVERY_ALREADY_EXISTS);
         }
 
+        // 허브 컨텍스트에서 경로 정보 조회
+        HubRouteResponse hubRoute = hubRouteService.getHubRoute(UUID.fromString("1bc91c30-9afa-4b08-892c-4cbfc8fb938b"));
+
         // 배송 생성
         Delivery delivery = Delivery.create(
                 orderId,
@@ -56,30 +62,24 @@ public class DeliveryService {
         delivery = deliveryRepository.save(delivery);
 
         // 배송 경로 생성
-        // Todo: 허브 컨텍스트에 경로 요청 api 호출
         List<DeliveryRoute> routes = deliveryDomainService.addRoutes(
                 delivery.getId(),
-                departureHubId,
-                destinationHubId
+                hubRoute.departureHubId(),
+                hubRoute.arrivalHubId(),
+                new Distance(hubRoute.expectedDistance()),
+                new Duration(hubRoute.expectedTime())
         );
 
         // 첫 번째 경로에 허브 배송담당자 자동 배정
-        // Todo: 경로 응답 결과에 따라 수정 필요, 후 도메인 서비스로 분리
-        if (!routes.isEmpty()) {
-            // Facade를 통해 배송담당자 목록 조회
-            // Todo: p2p라면 하나의 경로로 업체 배송 담당자를 배정해 직접 배송, relay 등의 방식이라면 경로별 허브배송, 업체배송 지정
-            List<DeliveryPerson> hubDeliveryPersons = deliveryPersonFacade.getHubDeliveryPersons();
-            // List<DeliveryPerson> vendorDeliveryPersons = deliveryPersonFacade.getVendorDeliveryPersons();
+        // Facade를 통해 배송담당자 목록 조회
+        List<DeliveryPerson> hubDeliveryPersons = deliveryPersonFacade.getHubDeliveryPersons();
 
-            // 도메인 서비스를 통해 선택
-            // Todo: 경로 하나면 이대로 진행, 여러개면 경로 리스트 도메인 서비스에 넘겨 로직 처리
-            DeliveryPerson deliveryPerson = deliveryDomainService.selectDeliveryPerson(hubDeliveryPersons);
+        // 도메인 서비스를 통해 선택
+        DeliveryPerson deliveryPerson = deliveryDomainService.selectDeliveryPerson(hubDeliveryPersons);
 
-            routes.getFirst().assignDeliveryPerson(deliveryPerson.getId());
-        }
+        routes.getFirst().assignDeliveryPerson(deliveryPerson.getId());
 
         // 경로 저장
-        // Todo: pojo 하기 때문에 cascade는 할 수 없고, 직접 다 저장해야 하는건가?
         deliveryRouteRepository.saveAll(routes);
 
         // Delivery에 경로 로딩
@@ -179,8 +179,6 @@ public class DeliveryService {
         Delivery delivery = findDeliveryById(deliveryId);
         delivery.completeDelivery();
         deliveryRepository.save(delivery);
-
-        // Todo: 배송 완료 시 주문에 api 호출해서 완료를 알려야 하는가??
     }
 
     // 배송 조회 (경로 포함)

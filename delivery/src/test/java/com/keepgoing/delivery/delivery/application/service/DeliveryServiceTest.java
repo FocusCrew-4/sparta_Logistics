@@ -8,6 +8,8 @@ import com.keepgoing.delivery.delivery.domain.repository.DeliveryRepository;
 import com.keepgoing.delivery.delivery.domain.repository.DeliveryRouteRepository;
 import com.keepgoing.delivery.delivery.domain.service.DeliveryDomainService;
 import com.keepgoing.delivery.delivery.domain.vo.*;
+import com.keepgoing.delivery.delivery.infrastructure.api.client.HubRouteService;
+import com.keepgoing.delivery.delivery.infrastructure.api.dto.HubRouteResponse;
 import com.keepgoing.delivery.deliveryperson.domain.entity.DeliveryPerson;
 import com.keepgoing.delivery.deliveryperson.domain.entity.DeliveryPersonType;
 import com.keepgoing.delivery.deliveryperson.domain.entity.DeliverySeq;
@@ -29,6 +31,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DeliveryServiceTest {
+
+    @Mock
+    private HubRouteService hubRouteService;
 
     @Mock
     private DeliveryRepository deliveryRepository;
@@ -56,6 +61,14 @@ class DeliveryServiceTest {
         Long recipientUserId = 1L;
         String recipientSlackId = "@user123";
 
+        HubRouteResponse hubRoute = new HubRouteResponse(
+                UUID.fromString("1bc91c30-9afa-4b08-892c-4cbfc8fb938b"),
+                departureHubId,
+                destinationHubId,
+                10.0,
+                20
+        );
+
         given(deliveryRepository.existsByOrderId(orderId)).willReturn(false);
 
         Delivery savedDelivery = Delivery.create(
@@ -65,14 +78,23 @@ class DeliveryServiceTest {
 
         DeliveryRoute route = DeliveryRoute.create(
                 savedDelivery.getId(), departureHubId, destinationHubId,
-                new Distance(100.0), new Duration(120), new RouteSeq(1)
+                new Distance(10.0), new Duration(20), new RouteSeq(1)
         );
-        given(deliveryDomainService.addRoutes(any(UUID.class), eq(departureHubId), eq(destinationHubId)))
-                .willReturn(List.of(route));
+
+        // ✅ 인자 전부 any()로 변경
+        given(deliveryDomainService.addRoutes(
+                any(UUID.class),
+                any(UUID.class),
+                any(UUID.class),
+                any(Distance.class),
+                any(Duration.class)
+        )).willReturn(List.of(route));
 
         DeliveryPerson hubPerson = DeliveryPerson.createHubDeliveryPerson(100L, "@hub_person", new DeliverySeq(1));
         given(deliveryPersonFacade.getHubDeliveryPersons()).willReturn(List.of(hubPerson));
         given(deliveryDomainService.selectDeliveryPerson(anyList())).willReturn(hubPerson);
+
+        given(hubRouteService.getHubRoute(any(UUID.class))).willReturn(hubRoute);
 
         // When
         Delivery result = deliveryService.createDelivery(
@@ -86,6 +108,7 @@ class DeliveryServiceTest {
         verify(deliveryRepository).save(any(Delivery.class));
         verify(deliveryRouteRepository).saveAll(anyList());
     }
+
 
     @Test
     @DisplayName("배송 생성 - 중복 주문 실패")

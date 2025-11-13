@@ -58,7 +58,12 @@ public enum ErrorCode {
     // Security 관련
     USER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED ,"7201", "인증되지 않은 사용자 입니다."),
     USER_FORBIDDEN(HttpStatus.FORBIDDEN, "7202", "접근 권한이 없는 사용자 입니다."),
-    FORBIDDEN_HUB_ACCESS(HttpStatus.FORBIDDEN , "7203", "해당 허브에 접근 권한이 없습니다.");
+    FORBIDDEN_HUB_ACCESS(HttpStatus.FORBIDDEN , "7203", "해당 허브에 접근 권한이 없습니다."),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"7204", "서버 내부 오류가 발생했습니다."),
+
+    // Hub Route 관련
+    HUB_ROUTE_NOT_FOUND(HttpStatus.NOT_FOUND, "7301", "허브 경로를 찾을 수 없습니다."),
+    HUB_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "7302","허브 서비스와 통신할 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
