@@ -15,8 +15,8 @@ import java.util.UUID;
 public class DeliveryRouteEntity {
 
     @Id
-    @Column(name = "id")
-    private UUID id;
+    @Column(name = "id", nullable = false, updatable = false)
+    private UUID id; // 도메인에서 생성
 
     @Column(name = "delivery_id", nullable = false)
     private UUID deliveryId;
@@ -99,12 +99,8 @@ public class DeliveryRouteEntity {
 
     @PrePersist
     protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-        if (updatedAt == null) {
-            updatedAt = LocalDateTime.now();
-        }
+        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (updatedAt == null) updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
