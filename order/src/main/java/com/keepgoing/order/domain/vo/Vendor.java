@@ -6,6 +6,9 @@ import java.util.UUID;
 public record Vendor(
     UUID vendorId
 ) {
+    public Vendor {
+        if (vendorId == null) throw new IllegalArgumentException("업체 아이디는 필수입니다.");
+    }
 
     @Override
     public boolean equals(Object o) {

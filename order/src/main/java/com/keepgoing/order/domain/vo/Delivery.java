@@ -10,6 +10,10 @@ public record Delivery(
     String deliveryRequestNote
 ) {
 
+    public Delivery {
+        if (deliveryDueAt == null) throw new IllegalArgumentException("납품 기한은 필수입니다.");
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

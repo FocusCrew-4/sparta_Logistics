@@ -5,6 +5,10 @@ import java.util.Objects;
 public record Member(
     Long memberId
 ){
+    public Member {
+        if (memberId == null) throw new IllegalArgumentException("주문자 아이디는 필수입니다.");
+        if (memberId > 0L) throw new IllegalArgumentException("주문자 아이디는 0L보다 커야합니다.");
+    }
 
     @Override
     public boolean equals(Object o) {
