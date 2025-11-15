@@ -19,11 +19,14 @@ import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 
+@Builder
 @Getter
 @Entity
 @Table(name = "p_order")
@@ -35,6 +38,7 @@ import org.hibernate.annotations.FilterDef;
 )
 @Filter(name = "softDeleteFilter")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderEntity {
 
     @Id
@@ -107,6 +111,39 @@ public class OrderEntity {
     @Column(name = "version")
     private Long version;
 
+    public static OrderEntity create(Long memberId, UUID supplierId, UUID receiverId, UUID productId,
+    LocalDateTime deliveryDueAt, String deliveryRequestNote,
+    Integer quantity, Integer totalPrice, OrderState orderState, CancelState cancelState,
+        UUID idempotencyKey, LocalDateTime orderedAt) {
+
+        Member member = new Member(memberId);
+        Vendor supplier = new Vendor(supplierId);
+        Vendor receiver = new Vendor(receiverId);
+        Product product = new Product(productId);
+        Delivery delivery = new Delivery(null, deliveryDueAt, deliveryRequestNote);
+
+        if (quantity == null || quantity < 1) throw new IllegalArgumentException("상품 수량은 1개 이상이어야 합니다.");
+        if (totalPrice == null || totalPrice < 0) throw new IllegalArgumentException("총 주문 금액은 0원 이상이어야 합니다.");
+        if (orderState == null) throw new IllegalArgumentException("주문 상태는 필수값입니다.");
+        if (cancelState == null) throw new IllegalArgumentException("취소 상태는 필수값입니다.");
+        if (idempotencyKey == null) throw new IllegalArgumentException("멱등키는 필수값입니다.");
+        if (orderedAt == null) throw new IllegalArgumentException("주문 시간은 필수값입니다.");
+
+        return OrderEntity.builder()
+            .member(member)
+            .supplier(supplier)
+            .receiver(receiver)
+            .product(product)
+            .delivery(delivery)
+            .quantity(quantity)
+            .totalPrice(totalPrice)
+            .orderState(orderState)
+            .cancelState(cancelState)
+            .idempotencyKey(idempotencyKey)
+            .orderedAt(orderedAt)
+            .build();
+    }
+
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
@@ -123,13 +160,3 @@ public class OrderEntity {
     }
 
 }
-//
-//if (memberId == null) throw new IllegalArgumentException("memberId 필수");
-//        if (supplierId == null) throw new IllegalArgumentException("supplierId 필수");
-//        if (receiverId == null) throw new IllegalArgumentException("receiverId 필수");
-//        if (productId == null) throw new IllegalArgumentException("productId 필수");
-//        if (quantity == null || quantity < 1) throw new IllegalArgumentException("quantity >= 1");
-//        if (totalPrice == null || totalPrice < 0) throw new IllegalArgumentException("totalPrice >= 0");
-//        if (orderedAt == null) throw new IllegalArgumentException("orderedAt 필수");
-//        if (deliveryDueAt == null || deliveryDueAt.isBefore(orderedAt))
-//    throw new IllegalArgumentException("deliveryDueAt은 orderedAt 이후여야 함");
