@@ -10,7 +10,9 @@ import com.keepgoing.order.domain.vo.Vendor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 public class Order {
 
     private UUID id;
