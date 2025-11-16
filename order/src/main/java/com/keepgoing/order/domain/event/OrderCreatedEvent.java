@@ -12,12 +12,16 @@ import lombok.Getter;
 public class OrderCreatedEvent {
     private final UUID orderId;
     private final UUID productId;
+    private final Integer totalPrice;
+    private final Integer quantity;
     private final LocalDateTime occurredAt;
 
     public static OrderCreatedEvent of(Order order, LocalDateTime now) {
         return new OrderCreatedEvent(
             order.getId(),
             order.getProduct().productId(),
+            order.getTotalPrice(),
+            order.getQuantity(),
             now
         );
     }
