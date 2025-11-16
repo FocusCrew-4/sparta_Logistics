@@ -1,4 +1,4 @@
-package com.keepgoing.order.domain.events;
+package com.sparta.practiceorder.events;
 
 import java.lang.StackWalker.Option;
 import java.time.LocalDateTime;

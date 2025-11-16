@@ -1,8 +1,8 @@
-package com.keepgoing.order.domain.events;
+package com.sparta.practiceorder.events;
 
-import com.keepgoing.order.domain.order.Order;
+
+import com.sparta.practiceorder.entity.Order;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
