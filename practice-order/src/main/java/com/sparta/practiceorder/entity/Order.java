@@ -1,5 +1,6 @@
 package com.sparta.practiceorder.entity;
 
+import com.sparta.practiceorder.enums.OrderStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,13 +34,16 @@ public class Order {
 
     Integer quantity;
 
+    OrderStatus orderStatus;
+
     public static Order create(UUID productId, UUID supplierId, UUID receiverId, int quantity) {
         return new Order(
             null,
             productId,
             supplierId,
             receiverId,
-            quantity
+            quantity,
+            OrderStatus.PENDING
         );
     }
 }

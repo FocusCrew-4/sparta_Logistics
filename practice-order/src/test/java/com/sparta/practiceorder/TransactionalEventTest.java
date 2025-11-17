@@ -13,11 +13,16 @@ import com.sparta.practiceorder.listener.PaymentEventListener;
 import com.sparta.practiceorder.repository.OrderRepository;
 import com.sparta.practiceorder.service.OrderService;
 import java.util.UUID;
+import org.aspectj.lang.annotation.After;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class TransactionalEventTest {
@@ -30,6 +35,16 @@ public class TransactionalEventTest {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @BeforeEach
+    public void setUp() {
+        orderRepository.deleteAll();
+    }
+
+    @AfterEach
+    void afterEach() {
+        orderRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("트랜잭션 롤백 시 이벤트가 발행되지 않는다")
@@ -51,6 +66,7 @@ public class TransactionalEventTest {
 
     @Test
     @DisplayName("트랜잭션 커밋 성공 시 이벤트가 발행된다")
+    @Rollback(false)
     void whenTransactionCommit_EventShouldBePublished() {
         // given
         OrderCreateRequest request = createValidRequest();
