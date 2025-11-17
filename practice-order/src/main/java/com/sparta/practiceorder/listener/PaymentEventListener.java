@@ -18,15 +18,15 @@ public class PaymentEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleOrderCreated(OrderCreatedEvent event) {
-        log.info("결제 처리 시작- 주문 ID: {}", event.getOrderId());
-
-        paymentService.processPayment(
-            event.getOrderId(),
-            event.getProductId(),
-            event.getQuantity()
-        );
-
-        log.info("결제 처리 완료 - 주문 ID: {}", event.getOrderId());
+//        log.info("결제 처리 시작- 주문 ID: {}", event.getOrderId());
+//
+//        paymentService.processPayment(
+//            event.getOrderId(),
+//            event.getProductId(),
+//            event.getQuantity()
+//        );
+//
+//        log.info("결제 처리 완료 - 주문 ID: {}", event.getOrderId());
     }
 
     @Async
