@@ -51,13 +51,20 @@ public class TransactionalEventTest {
     void whenTransactionRollback_EventShouldNotBePublished() {
         OrderCreateRequest request = createInvalidRequest(); // 예외를 발생시킬 요청
 
+        // when & then
+        // 주문 생성 중 예외가 발생하여 트랜잭션이 롤백됩니다.
         assertThatThrownBy(() -> orderService.createOrder(request))
             .isInstanceOf(IllegalArgumentException.class);
 
+        // 트랜잭션이 롤백되었으므로, 주문도 저장되지 않고
         assertThat(orderRepository.findAll()).isEmpty();
 
+        // 이벤트 리스너도 실행되지 않습니다.
         verify(paymentEventListener, never())
             .handleOrderCreated(any(OrderCreatedEvent.class));
+
+        // 이를 통해 데이터 일관성이 유지됩니다.
+        // "주문은 없는데 결제는 진행된다"는 상황을 방지할 수 있습니다.
     }
 
     private OrderCreateRequest createInvalidRequest() {
@@ -75,8 +82,10 @@ public class TransactionalEventTest {
         orderService.createOrder(request);
 
         // then
+        // 트랜잭션이 성공적으로 커밋되었으므로
         assertThat(orderRepository.findAll()).hasSize(1);
 
+        // 이벤트 리스너도 실행됩니다.
         verify(paymentEventListener, times(1))
             .handleOrderCreated(any(OrderCreatedEvent.class));
     }
