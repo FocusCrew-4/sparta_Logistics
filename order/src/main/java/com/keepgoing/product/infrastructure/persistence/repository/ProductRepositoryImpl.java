@@ -5,6 +5,7 @@ import com.keepgoing.product.domain.Product;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,11 +17,12 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Product findById(UUID productId) {
         return productJpaRepository.findById(productId)
             .orElseThrow(
-                () -> new IllegalArgumentException("상품을 찾을 수 없습니다. ")
+                () -> new IllegalArgumentException("상품을 찾을 수 없습니다.")
             );
     }
 
     @Override
+    @Transactional
     public Product save(Product product) {
         return productJpaRepository.save(product);
     }
