@@ -45,4 +45,9 @@ public class OrderService {
 
         return CreateOrderResponse.from(order);
     }
+
+    @Transactional
+    public void updateOrderStateToCompleted(UUID orderId) {
+        orderRepository.updateOrderStateToCompleted(orderId);
+    }
 }

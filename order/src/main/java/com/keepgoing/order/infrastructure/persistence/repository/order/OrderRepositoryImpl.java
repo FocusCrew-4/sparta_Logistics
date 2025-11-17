@@ -39,4 +39,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     public void throwException() {
 
     }
+
+    @Override
+    public void updateOrderStateToCompleted(UUID orderId) {
+        OrderEntity orderEntity = orderJpaRepository.findById(orderId).orElseThrow(
+            () -> new NotFoundOrderException("아이디에 해당하는 주문을 찾을 수 없습니다.")
+        );
+
+        orderEntity.updateOrderStateToCompleted();
+    }
 }

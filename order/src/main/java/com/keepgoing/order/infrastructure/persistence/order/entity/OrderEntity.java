@@ -159,4 +159,8 @@ public class OrderEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updateOrderStateToCompleted() {
+        this.orderState = OrderState.COMPLETED;
+    }
+
 }
