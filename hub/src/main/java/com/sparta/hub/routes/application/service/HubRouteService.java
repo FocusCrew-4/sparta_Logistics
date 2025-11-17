@@ -1,10 +1,16 @@
 package com.sparta.hub.routes.application.service;
 
+import com.sparta.hub.application.command.CreateHubCommand;
+import com.sparta.hub.application.dto.HubResponse;
+import com.sparta.hub.domain.entity.Hub;
+import com.sparta.hub.domain.repository.HubRepository;
 import com.sparta.hub.routes.application.command.CreateHubRouteCommand;
 import com.sparta.hub.routes.application.command.UpdateHubRouteCommand;
 import com.sparta.hub.routes.application.dto.HubRouteResponse;
+import com.sparta.hub.routes.application.event.EventPublisher;
 import com.sparta.hub.routes.application.query.HubRouteSearchQuery;
 import com.sparta.hub.routes.domain.entity.HubRoute;
+import com.sparta.hub.routes.domain.events.HubCreatedEvent;
 import com.sparta.hub.routes.domain.repository.HubRouteRepository;
 import com.sparta.hub.routes.infrastructure.repository.JpaHubRouteRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -23,6 +30,8 @@ public class HubRouteService {
 
     private final HubRouteRepository hubRouteRepository;
     private final JpaHubRouteRepository jpaHubRouteRepository;
+    private final HubRepository hubRepository;
+    private final EventPublisher eventPublisher;
 
     public HubRouteResponse createRoute(CreateHubRouteCommand command) {
         command.validate();
@@ -94,6 +103,18 @@ public class HubRouteService {
 
         route.delete();
         hubRouteRepository.save(route);
+    }
+
+    @Transactional
+    public HubResponse createHub(CreateHubCommand command) {
+
+        Hub hub = command.toEntity();
+        hubRepository.save(hub);
+
+        // 이벤트 발행
+        eventPublisher.publish(HubCreatedEvent.of(hub));
+
+        return HubResponse.from(hub);
     }
 
     // ==================== Specification ====================
