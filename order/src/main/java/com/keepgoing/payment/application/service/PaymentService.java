@@ -22,10 +22,12 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final Clock clock;
 
+    @Transactional
     public void processPayment(UUID orderId, UUID productId, Integer totalPrice, Integer quantity) {
         // 간단한 결제 처리 로직
         Payment payment = Payment.create(orderId, calculateAmount(totalPrice, quantity));
 
+        // 외부 API 호출
         payment.complete(); // 실무에서는 PG사 연동 등의 복잡한 로직이 들어갑니다
 
         paymentRepository.save(payment);
@@ -33,7 +35,7 @@ public class PaymentService {
         // 결제 완료 이벤트 발행
         eventPublisher.publishEvent(PaymentCompletedEvent.of(
             orderId,
-            payment.getId(),
+            productId,
             quantity,
             LocalDateTime.now(clock)
         ));

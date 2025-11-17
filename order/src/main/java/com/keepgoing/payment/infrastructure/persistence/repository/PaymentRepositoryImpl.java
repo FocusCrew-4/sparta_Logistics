@@ -3,6 +3,7 @@ package com.keepgoing.payment.infrastructure.persistence.repository;
 
 import com.keepgoing.payment.application.repo.PaymentRepository;
 import com.keepgoing.payment.domain.Payment;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -24,5 +25,10 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     @Override
     public Payment save(Payment payment) {
         return paymentJpaRepository.save(payment);
+    }
+
+    @Override
+    public List<Payment> findByOrderId(UUID orderId) {
+        return paymentJpaRepository.findByOrderId(orderId);
     }
 }
